@@ -96,7 +96,7 @@ float entropia(tipoElementoPila x){
 	float arg3 = (float)log2(x.pos/x.vivos_Izq);
 	float arg4 = (x.muertos_Izq/x.pos);
 	float arg5 = (float)log2(x.pos/x.muertos_Izq);
-	float arg6 = ((N-x.pos+)/N);
+	float arg6 = ((N-x.pos/N));
 	float arg7 = ((x.vivos_Dch/(N-x.pos)));
 	float arg8 = (float)log2((N-x.pos)/x.vivos_Dch);
 	float arg9 = (x.muertos_Dch/(N-x.pos));
