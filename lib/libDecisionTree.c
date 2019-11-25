@@ -90,6 +90,24 @@ void recogerDatos(datos ** vector_datos,char ** headers, int fd){
 	/*****************************************************************/
 }
 
+float entropia(tipoElementoPila x){
+	float arg1 = (x.pos/N);
+	float arg2 = (x.vivos_Izq/x.pos);
+	float arg3 = (float)log2(x.pos/x.vivos_Izq);
+	float arg4 = (x.muertos_Izq/x.pos);
+	float arg5 = (float)log2(x.pos/x.muertos_Izq);
+	float arg6 = ((N-x.pos+)/N);
+	float arg7 = ((x.vivos_Dch/(N-x.pos)));
+	float arg8 = (float)log2((N-x.pos)/x.vivos_Dch);
+	float arg9 = (x.muertos_Dch/(N-x.pos));
+	float arg10 = (float)log2((N-x.pos)/x.muertos_Dch);
+	
+	
+	printf("[arg1: %f, arg2: %f, arg3: %f, arg4: %f, arg5: %f, arg6: %f, arg7: %f, arg8: %f, arg9: %f, arg10: %f]\n",arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10);
+	
+	return ((arg1)*(arg2*arg3+arg4*arg5) + (arg6)*(arg7*arg8 + arg9*arg10));
+}
+
 float umbral(datos *vect, char* str_umbral){
 	int total_Vivos=0,total_Muertos,PosEntMin=0;
 	
@@ -156,44 +174,39 @@ float umbral(datos *vect, char* str_umbral){
 	ant=(vect[0]).isAlive;
 	sig=(vect[1]).isAlive;
 	tipoElementoPila x;
-    x.vivos_Izq=ant;
+    x.vivos_Izq=1;
     if(ant==0) x.muertos_Izq=1;
     else x.muertos_Izq=0;
     x.vivos_Dch=0;
-    x.vivos_Izq=0;
+    x.muertos_Dch=0;
 	
     for(int i=1; i<N; i++){
-		if(vect[i].isAlive==1){
-			x.muertos_Izq=i-x.vivos_Izq;
-			x.vivos_Izq++;
-		} else{
-			x.vivos_Izq=i-x.muertos_Izq;
-			x.muertos_Izq++;
-		}
+		
 		if(ant!=sig){
-			x.muertos_Dch=total_Muertos-x.muertos_Izq+1;
+			x.muertos_Dch=total_Muertos-x.muertos_Izq;
 			x.vivos_Dch=total_Vivos-x.vivos_Izq;
-			x.pos=i;
+			x.pos=i+1;
 			apilar(&p,x);
 		}
+		if(vect[i].isAlive==1){
+			x.vivos_Izq++;
+		} else{
+			x.muertos_Izq++;
+		}
+		
 		if(i<N){
 			ant=(vect[i]).isAlive;
 			sig=(vect[i+1]).isAlive;    //Aqui estas accediendo a vec[i+1] que no existe porque te sales 
                                         // de la tabla por eso he hecho el if para no salirte en la ultima
 		}
 	}
-    
+
 	while(!esNulaPila(p)){
 		x = cima(p);
-        //printf("\nX: [vivos_Izq = %d, vivos_dch = %d, muertos_izq = %d, muertos_dch = %d, pos = %d]\n",x.vivos_Izq,x.vivos_Dch,x.muertos_Izq,x.muertos_Dch,(int)x.pos);
+        printf("\nX: [vivos_Izq = %d, vivos_dch = %d, muertos_izq = %d, muertos_dch = %d, pos = %d]\n",x.vivos_Izq,x.vivos_Dch,x.muertos_Izq,x.muertos_Dch,(int)x.pos);
         // CAUNDO ALGÚN DATO DEL STRUCT X ES 0 SALTA ERROR ARITMÉTICO 
         if(x.vivos_Dch !=0 && x.vivos_Izq != 0 && x.muertos_Dch != 0 && x.muertos_Izq != 0)
-        
-        
-        Ent=(x.pos/N)*(((x.vivos_Izq/x.pos)*log2(x.pos/x.vivos_Izq))+(x.muertos_Izq/x.pos)*log2(x.pos/x.muertos_Izq))+((N-x.pos+1)/N)*
-            (((x.vivos_Dch/N-x.pos+1)*log2(N-x.pos+1/x.vivos_Dch))+((x.muertos_Dch/N-x.pos+1)*log2(N-x.pos+1/x.muertos_Dch)));
-            
-            
+        Ent=entropia(x);
         printf("ENT: [%f]\n",Ent);
         printf("POS_ENT: [%d]\n",(int)x.pos);
 		if(Ent<MinEnt && Ent >= 0){ // A veces ENT es negativo!! Hay que ver que está mal
@@ -206,8 +219,7 @@ float umbral(datos *vect, char* str_umbral){
 	}
     // CAUNDO ALGÚN DATO DEL STRUCT X ES 0 SALTA ERROR ARITMÉTICO 
     if(x.vivos_Dch !=0 && x.vivos_Izq != 0 && x.muertos_Dch != 0 && x.muertos_Izq != 0)
-	Ent=(x.pos/N)*((x.vivos_Izq/x.pos)*log2(x.pos/x.vivos_Izq)+(x.muertos_Izq/x.pos)*log2(x.pos/x.muertos_Izq))+((N-x.pos)/N)*
-        ((x.vivos_Dch/x.pos)*log2(x.pos/x.vivos_Dch)+(x.muertos_Dch/x.pos)*log2(x.pos/x.muertos_Dch));
+	Ent=entropia(x);
 	if(Ent<MinEnt && Ent >= 0){ // A veces ENT es negativo!! Hay que ver que está mal
 			MinEnt=Ent;
 			PosEntMin=x.pos;

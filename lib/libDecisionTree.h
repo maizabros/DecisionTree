@@ -15,5 +15,8 @@
  */
 #include <stdbool.h>
 #include "libstruct.h"
+#include "pilaDeadAlive.h"
+
 float umbral(datos *, char*);
 void recogerDatos(datos**,char **,int);
+float entropia(tipoElementoPila);
