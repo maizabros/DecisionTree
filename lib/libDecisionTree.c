@@ -23,7 +23,7 @@
 #include "libfrag.h"
 #include "pilaDeadAlive.h"
 
-#define C_ENTRENO 1557 
+#define C_ENTRENO 15 
 #define N C_ENTRENO
 #define BUFF 1024
 #define HEADERS_SIZE 128
@@ -100,7 +100,7 @@ float umbral(datos *vect, char* str_umbral){
         quicksort_popularity(vect, 0, N-1);
         printf(" POPULARITY\n");
         /******************************************************/
-        /* 
+        
         printf("\nOREDNADO POR POPULARITY:\n\n");
         for(int i=0; i<N; i++){
             printf(vect[i].male ? " true, " : "false, ");
@@ -119,7 +119,7 @@ float umbral(datos *vect, char* str_umbral){
             printf(vect[i].isAlive ? " true" : "false");
             printf("\n");
         }
-        */
+        
         /******************************************************/
     } else if(strcmp(str_umbral, "numDeadRelations") == 0){
         quicksort_numDeadRelations(vect, 0, N-1);
@@ -156,12 +156,13 @@ float umbral(datos *vect, char* str_umbral){
 	ant=(vect[0]).isAlive;
 	sig=(vect[1]).isAlive;
 	tipoElementoPila x;
-    x.vivos_Izq=0;
-    x.muertos_Izq=0;
+    x.vivos_Izq=ant;
+    if(ant==0) x.muertos_Izq=1;
+    else x.muertos_Izq=0;
     x.vivos_Dch=0;
     x.vivos_Izq=0;
 	
-    for(int i=1; i<=N; i++){
+    for(int i=1; i<N; i++){
 		if(vect[i].isAlive==1){
 			x.muertos_Izq=i-x.vivos_Izq;
 			x.vivos_Izq++;
@@ -187,14 +188,18 @@ float umbral(datos *vect, char* str_umbral){
         //printf("\nX: [vivos_Izq = %d, vivos_dch = %d, muertos_izq = %d, muertos_dch = %d, pos = %d]\n",x.vivos_Izq,x.vivos_Dch,x.muertos_Izq,x.muertos_Dch,(int)x.pos);
         // CAUNDO ALGÚN DATO DEL STRUCT X ES 0 SALTA ERROR ARITMÉTICO 
         if(x.vivos_Dch !=0 && x.vivos_Izq != 0 && x.muertos_Dch != 0 && x.muertos_Izq != 0)
-        Ent=(x.pos/N)*((x.vivos_Izq/x.pos)*log2(x.pos/x.vivos_Izq)+(x.muertos_Izq/x.pos)*log2(x.pos/x.muertos_Izq))+((N-x.pos+1)/N)*
-            ((x.vivos_Dch/x.pos)*log2(x.pos/x.vivos_Dch)+(x.muertos_Dch/x.pos)*log2(x.pos/x.muertos_Dch));
-        //printf("ENT: [%f]\n",Ent);
-        //printf("POS_ENT: [%d]\n",(int)x.pos);
+        
+        
+        Ent=(x.pos/N)*(((x.vivos_Izq/x.pos)*log2(x.pos/x.vivos_Izq))+(x.muertos_Izq/x.pos)*log2(x.pos/x.muertos_Izq))+((N-x.pos+1)/N)*
+            (((x.vivos_Dch/N-x.pos+1)*log2(N-x.pos+1/x.vivos_Dch))+((x.muertos_Dch/N-x.pos+1)*log2(N-x.pos+1/x.muertos_Dch)));
+            
+            
+        printf("ENT: [%f]\n",Ent);
+        printf("POS_ENT: [%d]\n",(int)x.pos);
 		if(Ent<MinEnt && Ent >= 0){ // A veces ENT es negativo!! Hay que ver que está mal
 			MinEnt=Ent;
-            //printf("\033[31mMINENT: [[%f]]\n",MinEnt);
-            //printf("POS_ENT_MIN: [%d]\n\033[0m",(int)x.pos);
+            printf("\033[31mMINENT: [[%f]]\n",MinEnt);
+            printf("POS_ENT_MIN: [%d]\n\033[0m",(int)x.pos);
 			PosEntMin=(int)x.pos;
 		}
         desapilar(&p);
