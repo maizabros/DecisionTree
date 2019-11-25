@@ -23,7 +23,7 @@
 #include "libfrag.h"
 #include "pilaDeadAlive.h"
 
-#define C_ENTRENO 15 
+#define C_ENTRENO 1557 
 #define N C_ENTRENO
 #define BUFF 1024
 #define HEADERS_SIZE 128
@@ -62,8 +62,8 @@ void recogerDatos(datos ** vector_datos,char ** headers, int fd){
 			i++;
 	}
 	/*****************************************************************/
-	/** PRINTEA LOS DATOS DESDE EL VECTOR DE STRUCT DATOS
-*/	
+	/** PRINTEA LOS DATOS DESDE EL VECTOR DE STRUCT DATOS            */
+    /*
 	for(int i=0; i<11; i++){             
 	    printf("%s",headers[i]);
 		if (i<10) printf(", ");
@@ -87,23 +87,31 @@ void recogerDatos(datos ** vector_datos,char ** headers, int fd){
 		printf((*vector_datos)[i].isAlive ? " true" : "false");
 		printf("\n");
 	}
+    */
 	/*****************************************************************/
 }
 
 float entropia(tipoElementoPila x){
-	float arg1 = (x.pos/N);
-	float arg2 = (x.vivos_Izq/x.pos);
-	float arg3 = (float)log2(x.pos/x.vivos_Izq);
-	float arg4 = (x.muertos_Izq/x.pos);
-	float arg5 = (float)log2(x.pos/x.muertos_Izq);
-	float arg6 = ((N-x.pos/N));
-	float arg7 = ((x.vivos_Dch/(N-x.pos)));
-	float arg8 = (float)log2((N-x.pos)/x.vivos_Dch);
-	float arg9 = (x.muertos_Dch/(N-x.pos));
-	float arg10 = (float)log2((N-x.pos)/x.muertos_Dch);
+	double arg1 = ((double)(x.vivos_Izq+x.muertos_Izq)/N);
+	double arg2 = (x.vivos_Izq/(double)(x.vivos_Izq+x.muertos_Izq));
+	double arg3;
+    if (x.vivos_Izq > 0) arg3 = log2((double)(x.vivos_Izq+x.muertos_Izq)/x.vivos_Izq);
+    else arg3 = 0;
+	double arg4 = (x.muertos_Izq/(double)(x.vivos_Izq+x.muertos_Izq));
+	double arg5;
+    if (x.muertos_Izq > 0) arg5 = log2((double)(x.vivos_Izq+x.muertos_Izq)/x.muertos_Izq);
+    else arg5 = 0;
+	double arg6 = (((double)(x.vivos_Dch+x.muertos_Dch)/N));
+	double arg7 = ((x.vivos_Dch/(double)(x.vivos_Dch+x.muertos_Dch)));
+	double arg8;
+    if (x.vivos_Dch > 0) arg8 = log2((double)(x.vivos_Dch+x.muertos_Dch)/x.vivos_Dch);
+    else arg8 = 0;
+	double arg9 = (x.muertos_Dch/(double)(x.vivos_Dch+x.muertos_Dch));
+	double arg10;
+    if (x.muertos_Dch > 0) arg10 = log2((double)(x.vivos_Dch+x.muertos_Dch)/x.muertos_Dch);
+    else arg10 = 0;
 	
-	
-	printf("[arg1: %f, arg2: %f, arg3: %f, arg4: %f, arg5: %f, arg6: %f, arg7: %f, arg8: %f, arg9: %f, arg10: %f]\n",arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10);
+	//printf("[arg1: %lf, arg2: %lf, arg3: %lf, arg4: %lf, arg5: %lf, arg6: %lf, arg7: %lf, arg8: %lf, arg9: %lf, arg10: %lf]\n",arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10);
 	
 	return ((arg1)*(arg2*arg3+arg4*arg5) + (arg6)*(arg7*arg8 + arg9*arg10));
 }
@@ -116,9 +124,9 @@ float umbral(datos *vect, char* str_umbral){
 	}
     if(strcmp(str_umbral, "popularity") == 0){
         quicksort_popularity(vect, 0, N-1);
-        printf(" POPULARITY\n");
+        //printf(" POPULARITY\n");
         /******************************************************/
-        
+        /*  
         printf("\nOREDNADO POR POPULARITY:\n\n");
         for(int i=0; i<N; i++){
             printf(vect[i].male ? " true, " : "false, ");
@@ -137,11 +145,11 @@ float umbral(datos *vect, char* str_umbral){
             printf(vect[i].isAlive ? " true" : "false");
             printf("\n");
         }
-        
+        */
         /******************************************************/
     } else if(strcmp(str_umbral, "numDeadRelations") == 0){
         quicksort_numDeadRelations(vect, 0, N-1);
-        printf(" NUMDEADRELATIONS \n");
+        //printf(" NUMDEADRELATIONS \n");
         /******************************************************/
         /* printf("\nOREDNADO POR NUMDEADRELATIONS:\n\n");
         for(int i=0; i<N; i++){
@@ -185,7 +193,7 @@ float umbral(datos *vect, char* str_umbral){
 		if(ant!=sig){
 			x.muertos_Dch=total_Muertos-x.muertos_Izq;
 			x.vivos_Dch=total_Vivos-x.vivos_Izq;
-			x.pos=i+1;
+			x.pos=i;
 			apilar(&p,x);
 		}
 		if(vect[i].isAlive==1){
@@ -203,29 +211,25 @@ float umbral(datos *vect, char* str_umbral){
 
 	while(!esNulaPila(p)){
 		x = cima(p);
-        printf("\nX: [vivos_Izq = %d, vivos_dch = %d, muertos_izq = %d, muertos_dch = %d, pos = %d]\n",x.vivos_Izq,x.vivos_Dch,x.muertos_Izq,x.muertos_Dch,(int)x.pos);
-        // CAUNDO ALGÚN DATO DEL STRUCT X ES 0 SALTA ERROR ARITMÉTICO 
-        if(x.vivos_Dch !=0 && x.vivos_Izq != 0 && x.muertos_Dch != 0 && x.muertos_Izq != 0)
+        //printf("\nX: [vivos_Izq = %d, vivos_dch = %d, muertos_izq = %d, muertos_dch = %d, pos = %d]\n",x.vivos_Izq,x.vivos_Dch,x.muertos_Izq,x.muertos_Dch,(int)x.pos);
         Ent=entropia(x);
-        printf("ENT: [%f]\n",Ent);
-        printf("POS_ENT: [%d]\n",(int)x.pos);
-		if(Ent<MinEnt && Ent >= 0){ // A veces ENT es negativo!! Hay que ver que está mal
+        //printf("ENT: [%f]\n",Ent);
+        //printf("POS_ENT: [%d]\n",(int)x.pos);
+		if(Ent<MinEnt){
 			MinEnt=Ent;
-            printf("\033[31mMINENT: [[%f]]\n",MinEnt);
-            printf("POS_ENT_MIN: [%d]\n\033[0m",(int)x.pos);
+            //printf("\033[31mMINENT: [[%f]]\n",MinEnt);
+            //printf("POS_ENT_MIN: [%d]\n\033[0m",(int)x.pos);
 			PosEntMin=(int)x.pos;
 		}
         desapilar(&p);
 	}
-    // CAUNDO ALGÚN DATO DEL STRUCT X ES 0 SALTA ERROR ARITMÉTICO 
-    if(x.vivos_Dch !=0 && x.vivos_Izq != 0 && x.muertos_Dch != 0 && x.muertos_Izq != 0)
 	Ent=entropia(x);
-	if(Ent<MinEnt && Ent >= 0){ // A veces ENT es negativo!! Hay que ver que está mal
+	if(Ent<MinEnt){
 			MinEnt=Ent;
-			PosEntMin=x.pos;
+			PosEntMin=(int)x.pos;
 	} //Para tratar el ultimo elemento de la pila porque se quedaba sin tratar
 	//Cálculo del umbral
-    printf("POSICION ENT MIN: %d\n\n",PosEntMin);
+    //printf("POSICION ENT MIN: %d\n\n",PosEntMin);
     if (strcmp(str_umbral,"numDeadRelations") == 0){
 	    umbral = (((float)vect[PosEntMin].numDeadRelations+(float)vect[PosEntMin-1].numDeadRelations)/2);
     } else if (strcmp(str_umbral,"popularity") == 0)
