@@ -17,6 +17,7 @@
 #include "libstruct.h"
 #include "pilaDeadAlive.h"
 
-float umbral(datos *, char*);
+double umbral(datos *, char*, int);
 void recogerDatos(datos**,char **,int);
-float entropia(tipoElementoPila);
+double entropia_umbral(tipoElementoPila);
+double entropia_clases(int clase_si, int clase_no, int clase_si_vivos, int clase_si_muertos, int clase_no_vivos, int clase_no_muertos);
