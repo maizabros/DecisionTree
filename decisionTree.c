@@ -36,5 +36,5 @@ int main(int argc, char* argv[]){
 
     int umb_numDead =(int)umbral(vector_datos,"numDeadRelations");
     float umb_pop = umbral(vector_datos,"popularity");
-    printf("UMBRALES:\n     popularity: %f\n    numDeadRelations: %d\n",umb_pop,umb_numDead);
+    printf("UMBRALES:\n    popularity: %f\n    numDeadRelations: %d\n",umb_pop,umb_numDead);
 }

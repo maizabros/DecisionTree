@@ -13,7 +13,7 @@
 #include <stdbool.h>
 
 typedef struct tipoElementoPila_t{
-	float pos;
+	int pos;
 	int vivos_Izq;	
 	int vivos_Dch;	
 	int muertos_Izq;	

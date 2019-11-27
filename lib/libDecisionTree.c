@@ -23,7 +23,7 @@
 #include "libfrag.h"
 #include "pilaDeadAlive.h"
 
-#define C_ENTRENO 1557 
+#define C_ENTRENO 1557
 #define N C_ENTRENO
 #define BUFF 1024
 #define HEADERS_SIZE 128
@@ -219,14 +219,14 @@ float umbral(datos *vect, char* str_umbral){
 			MinEnt=Ent;
             //printf("\033[31mMINENT: [[%f]]\n",MinEnt);
             //printf("POS_ENT_MIN: [%d]\n\033[0m",(int)x.pos);
-			PosEntMin=(int)x.pos;
+			PosEntMin=x.pos;
 		}
         desapilar(&p);
 	}
 	Ent=entropia(x);
 	if(Ent<MinEnt){
 			MinEnt=Ent;
-			PosEntMin=(int)x.pos;
+			PosEntMin=x.pos;
 	} //Para tratar el ultimo elemento de la pila porque se quedaba sin tratar
 	//Cálculo del umbral
     //printf("POSICION ENT MIN: %d\n\n",PosEntMin);
