@@ -27,6 +27,49 @@
 #define N C_ENTRENO
 #define BUFF 1024
 #define HEADERS_SIZE 128
+/* ***************************************************************************************************************** */
+/* **   A PARTIR DE AQUI HASTA EL SIGUIENTE SEPARADOR SON LAS DECLARACIONES DE FUNCIONES VARIABLES SEGUN ENTRADA  ** */
+/* ***************************************************************************************************************** */
+#define FUNCIONES_SELECCION_DE_CLASE(nombreDato, tipoDato)                                                          \
+    void cuenta_vivos_muertos_clase_##nombreDato(datos vect[N], tipoDato umbral, cuenta_datos_clases * resultados){ \
+        (*resultados).clase_si_vivos=0;                                                                             \
+        (*resultados).clase_no_vivos=0;                                                                             \
+        (*resultados).clase_si_muertos=0;                                                                           \
+        (*resultados).clase_no_muertos=0;                                                                           \
+        for (int i = 0; i < N; i++) {                                                                               \
+            if(vect[i].nombreDato < umbral){                                                                        \
+                if(vect[i].isAlive == 1)                                                                            \
+                    (*resultados).clase_no_vivos++;                                                                 \
+                else                                                                                                \
+                    (*resultados).clase_no_muertos++;                                                               \
+            } else {                                                                                                \
+                if(vect[i].isAlive == 1)                                                                            \
+                    (*resultados).clase_si_vivos++;                                                                 \
+                else                                                                                                \
+                    (*resultados).clase_si_muertos++;                                                               \
+            }                                                                                                       \
+        }                                                                                                           \
+        printf("\n");                                                                                               \
+    }                                                                                                               \
+/* *************************************************************************************************************** */
+/* *************************************************************************************************************** */
+
+FUNCIONES_SELECCION_DE_CLASE(male, bool);
+FUNCIONES_SELECCION_DE_CLASE(book1, bool);
+FUNCIONES_SELECCION_DE_CLASE(book2, bool);
+FUNCIONES_SELECCION_DE_CLASE(book3, bool);
+FUNCIONES_SELECCION_DE_CLASE(book4, bool);
+FUNCIONES_SELECCION_DE_CLASE(book5, bool);
+FUNCIONES_SELECCION_DE_CLASE(isMarried, bool);
+FUNCIONES_SELECCION_DE_CLASE(isNoble, bool);
+FUNCIONES_SELECCION_DE_CLASE(numDeadRelations, int);
+FUNCIONES_SELECCION_DE_CLASE(popularity, float);
+/* ******************************************* */
+/* *   ESTA PARTE GENERA LAS FUNCIONES       * */
+/* *   PARA CADA TIPO DE DATO DEL STRUCT     * */
+/* *   DE DATOS.                             * */
+/* *   SI NO ENTENDEIS COMO VA DECIDME xD    * */
+/* ******************************************* */
 
 void recogerDatos(datos ** vector_datos,char ** headers, int fd){
 
@@ -63,7 +106,7 @@ void recogerDatos(datos ** vector_datos,char ** headers, int fd){
 	}
 	/*****************************************************************/
 	/** PRINTEA LOS DATOS DESDE EL VECTOR DE STRUCT DATOS            */
-    /*
+    /*  
 	for(int i=0; i<11; i++){             
 	    printf("%s",headers[i]);
 		if (i<10) printf(", ");
