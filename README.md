@@ -1,7 +1,5 @@
 <p align="center">
-  <img src="http://www.cuentosinfantilescortos.net/wp-content/uploads/2016/08/cuento-infantil-arbol.png?raw=true" alt="ARBOLITO"/>
+  <img src="https://www.pngfind.com/pngs/m/64-641351_preview-tree-isometric-view-png-transparent-png.png" alt="ARBOLITO"/>
 </p>
 
-<div align="center" size="20">
-  <font size="20" color="#0a4707">¡¡ESTE ES EL BUENO!!</font>
-</div>
+  <font size="7" color="#0a4707">¡¡ESTE ES EL BUENO!!</font>
