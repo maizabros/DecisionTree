@@ -12,3 +12,9 @@ typedef struct dat{
 	float popularity;
 	bool isAlive;
 }datos;
+typedef struct cuenta_datos{
+    int clase_si_vivos;
+    int clase_si_muertos;
+    int clase_no_vivos;
+    int clase_no_muertos;
+}cuenta_datos_clases;
