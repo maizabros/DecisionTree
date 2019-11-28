@@ -1,4 +1,4 @@
-#‎‎‎‎‎‎‎‎‎‎‎‎¡¡ÉSTE ES EL BUENO!!"‎‎‎‎‎‎‎‎‎‎‎‎‎
+#‎¡¡ÉSTE ES EL BUENO!!
 
 <br></br>
 <p align="center">
