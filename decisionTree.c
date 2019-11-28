@@ -21,13 +21,11 @@
 #include "lib/libDecisionTree.h"
 
 #define BUFF 1024
-#define N 1557
 
 int main(int argc, char* argv[]){
 
     char * headers;
 	datos * vector_datos;
-	int total_Vivos = 0;
     if(argc < 2){
 		printf("Numero de argumentos invalido.\nNecesita indicar fichero CSV de datos.\n");
 		return EXIT_FAILURE;
@@ -35,12 +33,8 @@ int main(int argc, char* argv[]){
         int fd = open(argv[1],O_RDONLY, 0400);
         recogerDatos(&vector_datos,&headers,fd);
 	}
-	
-	for(int j=0; j<N; j++){
-		if(vector_datos[j].isAlive==1) total_Vivos++;
-	}
-	
-    int umb_numDead =(int)umbral(vector_datos,"numDeadRelations",total_Vivos);
-    double umb_pop = umbral(vector_datos,"popularity",total_Vivos);
-    printf("UMBRALES:\n    popularity: %lf\n    numDeadRelations: %d\n",umb_pop,umb_numDead);
+
+    int umb_numDead =(int)umbral(vector_datos,"numDeadRelations");
+    float umb_pop = umbral(vector_datos,"popularity");
+    printf("UMBRALES:\n    popularity: %f\n    numDeadRelations: %d\n",umb_pop,umb_numDead);
 }
