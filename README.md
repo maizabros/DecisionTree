@@ -3,5 +3,5 @@
 </p>
 
 <div align="center">
-  <font size=27" color="#0a4707">¡¡ESTE ES EL BUENO!!</font>
+  <font size="20" color="#0a4707">¡¡ESTE ES EL BUENO!!</font>
 </div>
