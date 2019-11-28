@@ -16,7 +16,23 @@
 #include <stdbool.h>
 #include "libstruct.h"
 #include "pilaDeadAlive.h"
+#define N 1557 
+#define FUNCIONES_SELECCION_DE_CLASE(nombreDato, tipoDato)                                                          \
+    void cuenta_vivos_muertos_clase_##nombreDato(datos vect[N], tipoDato umbral, cuenta_datos_clases * resultados); \
+
+
 
 float umbral(datos *, char*);
 void recogerDatos(datos**,char **,int);
 float entropia(tipoElementoPila);
+
+FUNCIONES_SELECCION_DE_CLASE(male, bool);
+FUNCIONES_SELECCION_DE_CLASE(book1, bool);
+FUNCIONES_SELECCION_DE_CLASE(book2, bool);
+FUNCIONES_SELECCION_DE_CLASE(book3, bool);
+FUNCIONES_SELECCION_DE_CLASE(book4, bool);
+FUNCIONES_SELECCION_DE_CLASE(book5, bool);
+FUNCIONES_SELECCION_DE_CLASE(isMarried, bool);
+FUNCIONES_SELECCION_DE_CLASE(isNoble, bool);
+FUNCIONES_SELECCION_DE_CLASE(numDeadRelations, int);
+FUNCIONES_SELECCION_DE_CLASE(popularity, float);
