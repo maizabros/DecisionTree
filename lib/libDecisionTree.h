@@ -22,9 +22,12 @@
 
 
 
-float umbral(datos *, char*);
+void print_data(datos * vector_datos);
+float umbral(datos *, char*, int);
 void recogerDatos(datos**,char **,int);
-float entropia(tipoElementoPila);
+float entropia_umbral(tipoElementoPila);
+float entropia_clases(cuenta_datos_clases);
+void calculo_entropia_clases(datos *, float, float **);
 
 FUNCIONES_SELECCION_DE_CLASE(male, bool);
 FUNCIONES_SELECCION_DE_CLASE(book1, bool);

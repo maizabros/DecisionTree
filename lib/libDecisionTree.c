@@ -24,9 +24,9 @@
 #include "pilaDeadAlive.h"
 
 #define C_ENTRENO 1557
-#define N C_ENTRENO
 #define BUFF 1024
 #define HEADERS_SIZE 128
+int N = C_ENTRENO;
 /* ***************************************************************************************************************** */
 /* **   A PARTIR DE AQUI HASTA EL SIGUIENTE SEPARADOR SON LAS DECLARACIONES DE FUNCIONES VARIABLES SEGUN ENTRADA  ** */
 /* ***************************************************************************************************************** */
@@ -49,7 +49,6 @@
                     (*resultados).clase_si_muertos++;                                                               \
             }                                                                                                       \
         }                                                                                                           \
-        printf("\n");                                                                                               \
     }                                                                                                               \
 /* *************************************************************************************************************** */
 /* *************************************************************************************************************** */
@@ -70,6 +69,32 @@ FUNCIONES_SELECCION_DE_CLASE(popularity, float);
 /* *   DE DATOS.                             * */
 /* *   SI NO ENTENDEIS COMO VA DECIDME xD    * */
 /* ******************************************* */
+
+void print_data(datos * vector_datos){
+	/*****************************************************************/
+	/** PRINTEA LOS DATOS DESDE EL VECTOR DE STRUCT DATOS            */
+	printf("\n");
+
+	for(int i=0; i<N; i++){
+		printf(vector_datos[i].male ? " true, " : "false, ");
+		printf(vector_datos[i].book1 ? " true, " : "false, ");
+		printf(vector_datos[i].book2 ? " true, " : "false, ");
+		printf(vector_datos[i].book3 ? " true, " : "false, ");
+		printf(vector_datos[i].book4 ? " true, " : "false, ");
+		printf(vector_datos[i].book5 ? " true, " : "false, ");
+		printf(vector_datos[i].isMarried ? " true, " : "false, ");
+		printf(vector_datos[i].isNoble ? " true, " : "false, ");
+		if (vector_datos[i].numDeadRelations < 10)
+		    printf("%d  , ",vector_datos[i].numDeadRelations);
+		else
+		    printf("%d , ",vector_datos[i].numDeadRelations);
+		printf("%f, ",vector_datos[i].popularity);
+		printf(vector_datos[i].isAlive ? " true" : "false");
+		printf("\n");
+	}
+	/*****************************************************************/
+
+}
 
 void recogerDatos(datos ** vector_datos,char ** headers, int fd){
 
@@ -104,37 +129,42 @@ void recogerDatos(datos ** vector_datos,char ** headers, int fd){
 			(*vector_datos)[i].isAlive = atoi(data[10]);
 			i++;
 	}
-	/*****************************************************************/
-	/** PRINTEA LOS DATOS DESDE EL VECTOR DE STRUCT DATOS            */
-    /*  
-	for(int i=0; i<11; i++){             
-	    printf("%s",headers[i]);
-		if (i<10) printf(", ");
-	}
-	printf("\n");
-
-	for(int i=0; i<N; i++){
-		printf((*vector_datos)[i].male ? " true, " : "false, ");
-		printf((*vector_datos)[i].book1 ? " true, " : "false, ");
-		printf((*vector_datos)[i].book2 ? " true, " : "false, ");
-		printf((*vector_datos)[i].book3 ? " true, " : "false, ");
-		printf((*vector_datos)[i].book4 ? " true, " : "false, ");
-		printf((*vector_datos)[i].book5 ? " true, " : "false, ");
-		printf((*vector_datos)[i].isMarried ? " true, " : "false, ");
-		printf((*vector_datos)[i].isNoble ? " true, " : "false, ");
-		if ((*vector_datos)[i].numDeadRelations < 10)
-		    printf("%d  , ",(*vector_datos)[i].numDeadRelations);
-		else
-		    printf("%d , ",(*vector_datos)[i].numDeadRelations);
-		printf("%f, ",(*vector_datos)[i].popularity);
-		printf((*vector_datos)[i].isAlive ? " true" : "false");
-		printf("\n");
-	}
-    */
-	/*****************************************************************/
 }
 
-float entropia(tipoElementoPila x){
+
+float entropia_clases(cuenta_datos_clases res){
+
+    double totalSi = res.clase_si_vivos + res.clase_si_muertos, 
+        totalNo = res.clase_no_vivos + res.clase_no_muertos;
+    double arg1 = ((double) res.clase_si_vivos/totalSi); 
+    double arg2 = log2(totalSi/(double) res.clase_si_vivos);
+    double arg3 = ((double) res.clase_si_muertos/totalSi); 
+    double arg4 = log2(totalSi/(double) res.clase_si_muertos);
+    double arg5 = ((double) res.clase_no_vivos/totalNo); 
+    double arg6 = log2(totalNo/(double) res.clase_no_vivos);
+    double arg7 = ((double) res.clase_no_muertos/totalNo); 
+    double arg8 = log2(totalNo/(double) res.clase_no_muertos);
+    if(totalSi == 0){
+        arg1 = 0;
+        arg2 = 0;
+        arg3 = 0;
+        arg4 = 0;
+    } else if(res.clase_si_vivos == 0) arg2 = 0;
+    else if(res.clase_si_muertos == 0) arg4 = 0;
+    if(totalNo == 0){
+        arg5 = 0;
+        arg6 = 0;
+        arg7 = 0;
+        arg8 = 0;
+    } else if(res.clase_no_vivos == 0) arg6 = 0;
+    else if(res.clase_no_muertos == 0) arg8 = 0;
+	//printf("[arg1: %lf, arg2: %lf, arg3: %lf, arg4: %lf, arg5: %lf, arg6: %lf, arg7: %lf, arg8: %lf]\n",arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8);
+
+    //printf("ENTROPIA_CLASE: [%f]\n\n",((totalSi/N) * ((arg1 * arg2) + (arg3 * arg4)) + (totalNo/N) * ((arg5 * arg6) + (arg7 * arg8))));
+    return ((totalSi/N) * ((arg1 * arg2) + (arg3 * arg4)) + (totalNo/N) * ((arg5 * arg6) + (arg7 * arg8))); 
+}
+
+float entropia_umbral(tipoElementoPila x){
 	double arg1 = ((double)(x.vivos_Izq+x.muertos_Izq)/N);
 	double arg2 = (x.vivos_Izq/(double)(x.vivos_Izq+x.muertos_Izq));
 	double arg3;
@@ -159,69 +189,24 @@ float entropia(tipoElementoPila x){
 	return ((arg1)*(arg2*arg3+arg4*arg5) + (arg6)*(arg7*arg8 + arg9*arg10));
 }
 
-float umbral(datos *vect, char* str_umbral){
-	int total_Vivos=0,total_Muertos,PosEntMin=0;
-	
-    for(int j=0; j<N; j++){
-		if(vect[j].isAlive==1) total_Vivos++;
-	}
-    if(strcmp(str_umbral, "popularity") == 0){
-        quicksort_popularity(vect, 0, N-1);
-        //printf(" POPULARITY\n");
-        /******************************************************/
-        /*  
-        printf("\nOREDNADO POR POPULARITY:\n\n");
-        for(int i=0; i<N; i++){
-            printf(vect[i].male ? " true, " : "false, ");
-            printf(vect[i].book1 ? " true, " : "false, ");
-            printf(vect[i].book2 ? " true, " : "false, ");
-            printf(vect[i].book3 ? " true, " : "false, ");
-            printf(vect[i].book4 ? " true, " : "false, ");
-            printf(vect[i].book5 ? " true, " : "false, ");
-            printf(vect[i].isMarried ? " true, " : "false, ");
-            printf(vect[i].isNoble ? " true, " : "false, ");
-            if (vect[i].numDeadRelations < 10)
-                printf("%d  , ",vect[i].numDeadRelations);
-            else
-                printf("%d , ",vect[i].numDeadRelations);
-            printf("%f, ",vect[i].popularity);
-            printf(vect[i].isAlive ? " true" : "false");
-            printf("\n");
-        }
-        */
-        /******************************************************/
-    } else if(strcmp(str_umbral, "numDeadRelations") == 0){
-        quicksort_numDeadRelations(vect, 0, N-1);
-        //printf(" NUMDEADRELATIONS \n");
-        /******************************************************/
-        /* printf("\nOREDNADO POR NUMDEADRELATIONS:\n\n");
-        for(int i=0; i<N; i++){
-            printf(vect[i].male ? " true, " : "false, ");
-            printf(vect[i].book1 ? " true, " : "false, ");
-            printf(vect[i].book2 ? " true, " : "false, ");
-            printf(vect[i].book3 ? " true, " : "false, ");
-            printf(vect[i].book4 ? " true, " : "false, ");
-            printf(vect[i].book5 ? " true, " : "false, ");
-            printf(vect[i].isMarried ? " true, " : "false, ");
-            printf(vect[i].isNoble ? " true, " : "false, ");
-            if (vect[i].numDeadRelations < 10)
-                printf("%d  , ",vect[i].numDeadRelations);
-            else
-                printf("%d , ",vect[i].numDeadRelations);
-            printf("%f, ",vect[i].popularity);
-            printf(vect[i].isAlive ? " true" : "false");
-            printf("\n");
-        }
-        */
-        /******************************************************/
-    }
-
-	total_Muertos=N-total_Vivos;
-	tipoPila p;
-	nuevaPila(&p);
+float umbral(datos *vect, char* str_umbral, int totalVivos){
+	int total_Muertos,PosEntMin=0;
 	bool ant,sig;
 	float Ent=100,umbral=0;
 	float MinEnt=100;
+	
+    if(strcmp(str_umbral, "popularity") == 0)
+        quicksort_popularity(vect, 0, N-1);
+    else if(strcmp(str_umbral, "numDeadRelations") == 0)
+        quicksort_numDeadRelations(vect, 0, N-1);
+    else{
+        printf("\033[31mERROR en UMBRAL:\033[0m clase no válida\nSaliendo...\n\n");
+        exit(EXIT_FAILURE);
+    }
+
+	total_Muertos=N-totalVivos;
+	tipoPila p;
+	nuevaPila(&p);
 	ant=(vect[0]).isAlive;
 	sig=(vect[1]).isAlive;
 	tipoElementoPila x;
@@ -232,10 +217,9 @@ float umbral(datos *vect, char* str_umbral){
     x.muertos_Dch=0;
 	
     for(int i=1; i<N; i++){
-		
 		if(ant!=sig){
 			x.muertos_Dch=total_Muertos-x.muertos_Izq;
-			x.vivos_Dch=total_Vivos-x.vivos_Izq;
+			x.vivos_Dch=totalVivos-x.vivos_Izq;
 			x.pos=i;
 			apilar(&p,x);
 		}
@@ -244,39 +228,58 @@ float umbral(datos *vect, char* str_umbral){
 		} else{
 			x.muertos_Izq++;
 		}
-		
-		if(i<N){
-			ant=(vect[i]).isAlive;
-			sig=(vect[i+1]).isAlive;    //Aqui estas accediendo a vec[i+1] que no existe porque te sales 
-                                        // de la tabla por eso he hecho el if para no salirte en la ultima
-		}
 	}
 
 	while(!esNulaPila(p)){
 		x = cima(p);
-        //printf("\nX: [vivos_Izq = %d, vivos_dch = %d, muertos_izq = %d, muertos_dch = %d, pos = %d]\n",x.vivos_Izq,x.vivos_Dch,x.muertos_Izq,x.muertos_Dch,(int)x.pos);
-        Ent=entropia(x);
-        //printf("ENT: [%f]\n",Ent);
-        //printf("POS_ENT: [%d]\n",(int)x.pos);
+        Ent=entropia_umbral(x);
 		if(Ent<MinEnt){
 			MinEnt=Ent;
-            //printf("\033[31mMINENT: [[%f]]\n",MinEnt);
-            //printf("POS_ENT_MIN: [%d]\n\033[0m",(int)x.pos);
 			PosEntMin=x.pos;
 		}
         desapilar(&p);
 	}
-	Ent=entropia(x);
+	Ent=entropia_umbral(x);
 	if(Ent<MinEnt){
 			MinEnt=Ent;
 			PosEntMin=x.pos;
 	} //Para tratar el ultimo elemento de la pila porque se quedaba sin tratar
 	//Cálculo del umbral
-    //printf("POSICION ENT MIN: %d\n\n",PosEntMin);
     if (strcmp(str_umbral,"numDeadRelations") == 0){
-	    umbral = (((float)vect[PosEntMin].numDeadRelations+(float)vect[PosEntMin-1].numDeadRelations)/2);
+	    umbral = ((float)(vect[PosEntMin].numDeadRelations + vect[PosEntMin-1].numDeadRelations)/2);
     } else if (strcmp(str_umbral,"popularity") == 0)
 	    umbral = ((vect[PosEntMin].popularity+vect[PosEntMin-1].popularity)/2);
     return umbral;
 
+}
+
+void calculo_entropia_clases(datos * vect, float totalVivos, float ** entropias_clases){
+
+    cuenta_datos_clases res;
+    float totalMuertos = N - totalVivos;
+    float entropia_C = -(totalVivos/N)*log2(totalVivos/N)-(totalMuertos/N)*log2(totalMuertos/N); 
+    int umb_numDead = (int)umbral(vect,"numDeadRelations",(int)totalVivos);
+    float umb_popularity = umbral(vect, "popularity", totalVivos);
+    *entropias_clases = (float*)malloc(sizeof(float)*10);
+    
+    cuenta_vivos_muertos_clase_male(vect, 1, &res); 
+    (*entropias_clases)[0] = entropia_C - entropia_clases(res);
+    cuenta_vivos_muertos_clase_book1(vect, 1, &res); 
+    (*entropias_clases)[1] = entropia_C - entropia_clases(res);
+    cuenta_vivos_muertos_clase_book2(vect, 1, &res); 
+    (*entropias_clases)[2] = entropia_C - entropia_clases(res);
+    cuenta_vivos_muertos_clase_book3(vect, 1, &res); 
+    (*entropias_clases)[3] = entropia_C - entropia_clases(res);
+    cuenta_vivos_muertos_clase_book4(vect, 1, &res); 
+    (*entropias_clases)[4] = entropia_C - entropia_clases(res);
+    cuenta_vivos_muertos_clase_book5(vect, 1, &res); 
+    (*entropias_clases)[5] = entropia_C - entropia_clases(res);
+    cuenta_vivos_muertos_clase_isMarried(vect, 1, &res); 
+    (*entropias_clases)[6] = entropia_C - entropia_clases(res);
+    cuenta_vivos_muertos_clase_isNoble(vect, 1, &res); 
+    (*entropias_clases)[7] = entropia_C - entropia_clases(res);
+    cuenta_vivos_muertos_clase_popularity(vect, umb_popularity, &res); 
+    (*entropias_clases)[8] = entropia_C - entropia_clases(res);
+    cuenta_vivos_muertos_clase_numDeadRelations(vect, umb_numDead, &res); 
+    (*entropias_clases)[9] = entropia_C - entropia_clases(res);
 }
