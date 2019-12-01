@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "libstruct.h"
 
-typedef datos * tipoElementoArbolBin;
+typedef datos ** tipoElementoArbolBin;
 typedef struct celdaABin{
 	 tipoElementoArbolBin elem;
 	 struct celdaABin *izda;

@@ -31,7 +31,7 @@ float entropia_umbral(tipoElementoPila);
 float entropia_clases(cuenta_datos_clases);
 void calculo_entropia_clases(datos *, float, float **);
 int calculo_minima_entropia(float **);
-void crearArbol(tipoArbolBin *, tipoElementoArbolBin, int, int);
+void crearArbol(tipoArbolBin *, datos *, int, int);
 
 FUNCIONES_SELECCION_DE_CLASE(male, bool);
 FUNCIONES_SELECCION_DE_CLASE(book1, bool);

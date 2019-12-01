@@ -19,7 +19,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <math.h>
-#include <signal.h>
 #include "quicksort.h"
 #include "libfrag.h"
 #include "pilaDeadAlive.h"
@@ -322,17 +321,16 @@ int calculo_minima_entropia(float ** entropias_clases){
 	return clase_seleccionada;
 }
 
-void crearArbol(tipoArbolBin * a, tipoElementoArbolBin e, int tamano, int totalVivos){
-    signal(SIGABRT,SIG_IGN);
+void crearArbol(tipoArbolBin * a, datos * e, int tamano, int totalVivos){
 	printf("	He entrado en la función\n");
 	if (esVacio(*a)){
 		printf("		Voy a hacer un nodo nuevo\n");
 		celdaArbolBin * nuevo;
 		nuevo = (celdaArbolBin*)malloc(sizeof(celdaArbolBin));
-		nuevo->elem = (datos *)malloc(sizeof(datos) * tamano); 
+		nuevo->elem = (datos **)malloc(sizeof(datos) * tamano); 
 		for (int i = 0; i < tamano; i++){
 			///printf("			Estoy metiendo el elemento\n");
-			nuevo->elem[i] = e[i];
+			(*nuevo->elem[i]) = e[i];
 			///printf("			El elemento %d es: %f\n",i, nuevo->elem[i].popularity);
 		}
 		nuevo->izda = NULL;
