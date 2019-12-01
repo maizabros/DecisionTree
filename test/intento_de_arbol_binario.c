@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include "arbolBin.h"
 
-
-
 bool esVacio(tipoArbolBin a){
 	return a == NULL;
 }
@@ -16,41 +14,20 @@ void errorArbolBin(char s[]){
 	printf("\nError en el árbol binario: %s\n", s);
 }
 
-tipoArbolBin construir(tipoElementoArbolBin e, tipoArbolBin i, tipoArbolBin d){
-	tipoArbolBin nuevo;
-	nuevo = (celdaArbolBin*)malloc(sizeof(celdaArbolBin));
-	nuevo->elem = e;
-	nuevo->izda = i;
-	nuevo->dcha = d;
-	return nuevo;
+
+int calculo_minima_entropia(float ** entropias_clases){
+	float min_entropia = 1.0;
+    int clase_seleccionada = -1;
+    printf("DATOS POR CLASE:\n");
+    for(int i = 0; i<10; i++){
+        printf("CLASE %d: [%f]\n",i+1,entropias_clases[i][0]);
+        if(min_entropia > entropias_clases[i][0]){
+            clase_seleccionada = i;
+            min_entropia = entropias_clases[i][0];
+        }
+    }
+	return clase_seleccionada;
 }
-
-void insertar(tipoArbolBin * a, tipoElementoArbolBin e, int tamano){
-	///printf("	He entrado en la función\n");
-	if (esVacio(*a)){
-		///printf("		Voy a hacer un nodo nuevo\n");
-		celdaArbolBin * nuevo;
-		nuevo = (celdaArbolBin*)malloc(sizeof(celdaArbolBin));
-		nuevo->elem = (datos *)malloc(sizeof(datos) * tamano); 
-		for (int i = 0; i < tamano; i++){
-			///printf("			Estoy metiendo el elemento\n");
-			nuevo->elem[i] = e[i];
-			///printf("			El elemento %d es: %f\n",i, nuevo->elem[i].popularity);
-		}
-		nuevo->izda = NULL;
-		nuevo->dcha = NULL;
-		*a = nuevo;
-	}
-	else{
-		/**
-		 * Y aquí entiendo que habría que volver a calcular el umbral o lo que toque,
-		 * separar el vector en dos de nuevo y llamar con un vector al hijo izquierdo o
-		 * al hijo derecho?? no lo tengo claro :(
-		 */ 
-	}
-
-}
-
 
 tipoElementoArbolBin devolverRaiz(tipoArbolBin a){
 	return a->elem;

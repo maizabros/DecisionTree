@@ -13,16 +13,14 @@ void nuevoArbolBin(tipoArbolBin *);
 
 void errorArbolBin(char s[]);
 
-tipoArbolBin construir(tipoElementoArbolBin, tipoArbolBin, tipoArbolBin );
-
 tipoElementoArbolBin devolverRaiz(tipoArbolBin);
-
-void preorden(tipoArbolBin);
 /*
+void preorden(tipoArbolBin);
+
 void inorden(tipoArbolBin);
 
 void postorden(tipoArbolBin);
 
 bool esVacio(tipoArbolBin);
 */
-void insertar(tipoArbolBin *, tipoElementoArbolBin, int);
+//void insertar(tipoArbolBin *, tipoElementoArbolBin, int);

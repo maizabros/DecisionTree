@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include "lib/libDecisionTree.h"
+#include "lib/arbolBin.h"
 
 #define BUFF 1024
 
@@ -39,14 +40,24 @@ int main(int argc, char* argv[]){
         if(vector_datos[i].isAlive == 1)
             totalVivos++;
     }
+
+    tipoArbolBin arbolito;
+    nuevoArbolBin(&arbolito);
+    
+    printf("VAMOS A PLANTAR UN ARBOL (*w*)\n");
+    crearArbol(&arbolito, vector_datos, N, totalVivos);
+    crearArbol(&arbolito, vector_datos, N, totalVivos);
+    printf("HEMOS PLANTADO UN ARBOL (*w*)\n");
+    
+     
     //int umb_numDead =(int)umbral(vector_datos,"numDeadRelations",totalVivos);
     //float umb_pop = umbral(vector_datos,"popularity",totalVivos);
     //printf("UMBRALES:\n    popularity: %f\n    numDeadRelations: %d\n",umb_pop,umb_numDead);
     
-    float * entropias_clases;
+    //float * entropias_clases; 
 
-    calculo_entropia_clases(vector_datos, (float) totalVivos, &entropias_clases);
-
+    //calculo_entropia_clases(vector_datos, (float) totalVivos, &entropias_clases);
+/*
     float min_entropia = 1.0;
     int clase_seleccionada = -1;
     printf("DATOS POR CLASE:\n");
@@ -57,7 +68,8 @@ int main(int argc, char* argv[]){
             min_entropia = entropias_clases[i];
         }
     }
-
+*/
+/*
     printf("·· SELECCIONADA CLASE");
     switch(clase_seleccionada){
         case 0:
@@ -91,7 +103,7 @@ int main(int argc, char* argv[]){
             printf("\033[31m popularity\033[0m\n");
             break;
     }
-
+*/
 /* 
     cuenta_datos_clases res; 
     cuenta_vivos_muertos_clase_male(vector_datos, 1, &res); 
