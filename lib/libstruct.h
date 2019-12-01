@@ -1,3 +1,5 @@
+#ifndef LIBSTRUCT
+#define LIBSTRUCT
 #include <stdbool.h>
 typedef struct dat{
 	bool male;
@@ -18,3 +20,4 @@ typedef struct cuenta_datos{
     int clase_no_vivos;
     int clase_no_muertos;
 }cuenta_datos_clases;
+#endif

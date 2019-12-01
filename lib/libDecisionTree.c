@@ -22,11 +22,15 @@
 #include "quicksort.h"
 #include "libfrag.h"
 #include "pilaDeadAlive.h"
+//#include "libDecisionTree.h"
+#include "arbolBin.h"
 
-#define C_ENTRENO 1557
+#define C_ENTRENO 15
 #define BUFF 1024
 #define HEADERS_SIZE 128
 int N = C_ENTRENO;
+float umb_popularity;
+int umb_numDead;
 /* ***************************************************************************************************************** */
 /* **   A PARTIR DE AQUI HASTA EL SIGUIENTE SEPARADOR SON LAS DECLARACIONES DE FUNCIONES VARIABLES SEGUN ENTRADA  ** */
 /* ***************************************************************************************************************** */
@@ -189,20 +193,22 @@ float entropia_umbral(tipoElementoPila x){
 	return ((arg1)*(arg2*arg3+arg4*arg5) + (arg6)*(arg7*arg8 + arg9*arg10));
 }
 
-float umbral(datos *vect, char* str_umbral, int totalVivos){
+float umbral(datos * vect, char* str_umbral, int totalVivos){
 	int total_Muertos,PosEntMin=0;
 	bool ant,sig;
 	float Ent=100,umbral=0;
 	float MinEnt=100;
 	
     if(strcmp(str_umbral, "popularity") == 0)
-        quicksort_popularity(vect, 0, N-1);
+        quicksort_popularity(&vect, 0, N-1);
     else if(strcmp(str_umbral, "numDeadRelations") == 0)
-        quicksort_numDeadRelations(vect, 0, N-1);
+        quicksort_numDeadRelations(&vect, 0, N-1);
     else{
         printf("\033[31mERROR en UMBRAL:\033[0m clase no válida\nSaliendo...\n\n");
         exit(EXIT_FAILURE);
     }
+    print_data(vect);
+
 
 	total_Muertos=N-totalVivos;
 	tipoPila p;
@@ -228,12 +234,15 @@ float umbral(datos *vect, char* str_umbral, int totalVivos){
 		} else{
 			x.muertos_Izq++;
 		}
+        ant = vect[i].isAlive;
+        sig = vect[i+1].isAlive;
 	}
 
 	while(!esNulaPila(p)){
 		x = cima(p);
         Ent=entropia_umbral(x);
 		if(Ent<MinEnt){
+            printf("ENTROPIA: [%f]\n",Ent);
 			MinEnt=Ent;
 			PosEntMin=x.pos;
 		}
@@ -241,6 +250,7 @@ float umbral(datos *vect, char* str_umbral, int totalVivos){
 	}
 	Ent=entropia_umbral(x);
 	if(Ent<MinEnt){
+            printf("ENTROPIA: [%f]\n",Ent);
 			MinEnt=Ent;
 			PosEntMin=x.pos;
 	} //Para tratar el ultimo elemento de la pila porque se quedaba sin tratar
@@ -253,33 +263,241 @@ float umbral(datos *vect, char* str_umbral, int totalVivos){
 
 }
 
-void calculo_entropia_clases(datos * vect, float totalVivos, float ** entropias_clases){
+void calculo_entropia_clases(datos * vect, float totalVivos, float *** entropias_clases){
 
     cuenta_datos_clases res;
     float totalMuertos = N - totalVivos;
     float entropia_C = -(totalVivos/N)*log2(totalVivos/N)-(totalMuertos/N)*log2(totalMuertos/N); 
-    int umb_numDead = (int)umbral(vect,"numDeadRelations",(int)totalVivos);
-    float umb_popularity = umbral(vect, "popularity", totalVivos);
-    *entropias_clases = (float*)malloc(sizeof(float)*10);
-    
+    umb_numDead = (int)umbral(vect,"numDeadRelations",(int)totalVivos);
+    umb_popularity = umbral(vect, "popularity", totalVivos);
+    printf("\nUMBRALES:\nnumDead [%d]\npopularity [%f]\n",umb_numDead,umb_popularity);
+    *entropias_clases = (float**)malloc(sizeof(float*)*10);
+    for(int i=0; i<10; i++){
+        (*entropias_clases)[i] = (float *)malloc(sizeof(float)*2);
+    }
     cuenta_vivos_muertos_clase_male(vect, 1, &res); 
-    (*entropias_clases)[0] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[0][0] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[0][1] = res.clase_si_vivos + res.clase_si_muertos;
     cuenta_vivos_muertos_clase_book1(vect, 1, &res); 
-    (*entropias_clases)[1] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[1][0] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[1][1] = res.clase_si_vivos + res.clase_si_muertos;
     cuenta_vivos_muertos_clase_book2(vect, 1, &res); 
-    (*entropias_clases)[2] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[2][0] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[2][1] = res.clase_si_vivos + res.clase_si_muertos;
     cuenta_vivos_muertos_clase_book3(vect, 1, &res); 
-    (*entropias_clases)[3] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[3][0] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[3][1] = res.clase_si_vivos + res.clase_si_muertos;
     cuenta_vivos_muertos_clase_book4(vect, 1, &res); 
-    (*entropias_clases)[4] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[4][0] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[4][1] = res.clase_si_vivos + res.clase_si_muertos;
     cuenta_vivos_muertos_clase_book5(vect, 1, &res); 
-    (*entropias_clases)[5] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[5][0] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[5][1] = res.clase_si_vivos + res.clase_si_muertos;
     cuenta_vivos_muertos_clase_isMarried(vect, 1, &res); 
-    (*entropias_clases)[6] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[6][0] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[6][1] = res.clase_si_vivos + res.clase_si_muertos;
     cuenta_vivos_muertos_clase_isNoble(vect, 1, &res); 
-    (*entropias_clases)[7] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[7][0] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[7][1] = res.clase_si_vivos + res.clase_si_muertos;
     cuenta_vivos_muertos_clase_popularity(vect, umb_popularity, &res); 
-    (*entropias_clases)[8] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[8][0] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[8][1] = res.clase_si_vivos + res.clase_si_muertos;
     cuenta_vivos_muertos_clase_numDeadRelations(vect, umb_numDead, &res); 
-    (*entropias_clases)[9] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[9][0] = entropia_C - entropia_clases(res);
+    (*entropias_clases)[9][1] = res.clase_si_vivos + res.clase_si_muertos;
+}
+
+int calculo_minima_entropia(float ** entropias_clases){
+	float min_entropia = 1.0;
+    int clase_seleccionada = -1;
+    printf("DATOS POR CLASE:\n");
+    for(int i = 0; i<10; i++){
+        printf("CLASE %d: [%f]\n",i+1,entropias_clases[i][0]);
+        if(min_entropia > entropias_clases[i][0]){
+            clase_seleccionada = i;
+            min_entropia = entropias_clases[i][0];
+        }
+    }
+	return clase_seleccionada;
+}
+
+void crearArbol(tipoArbolBin * a, tipoElementoArbolBin e, int tamano, int totalVivos){
+	printf("	He entrado en la función\n");
+	if (esVacio(*a)){
+		printf("		Voy a hacer un nodo nuevo\n");
+		celdaArbolBin * nuevo;
+		nuevo = (celdaArbolBin*)malloc(sizeof(celdaArbolBin));
+		nuevo->elem = (datos *)malloc(sizeof(datos) * tamano); 
+		for (int i = 0; i < tamano; i++){
+			///printf("			Estoy metiendo el elemento\n");
+			nuevo->elem[i] = e[i];
+			///printf("			El elemento %d es: %f\n",i, nuevo->elem[i].popularity);
+		}
+		nuevo->izda = NULL;
+		nuevo->dcha = NULL;
+		*a = nuevo;
+	}
+	else{
+		/**
+		 * Y aquí entiendo que habría que volver a calcular el umbral o lo que toque,
+		 * separar el vector en dos de nuevo y llamar con un vector al hijo izquierdo o
+		 * al hijo derecho?? no lo tengo claro :(
+		 */
+		float ** entropias_clases;
+		calculo_entropia_clases(e , (float) totalVivos, &entropias_clases);
+		datos * hijoI;
+		datos * hijoD;
+		int clase_seleccionada = calculo_minima_entropia(entropias_clases);
+		hijoI = (datos *)malloc(sizeof(datos) * entropias_clases[clase_seleccionada][1]);
+		hijoD = (datos *)malloc(sizeof(datos) * (tamano - entropias_clases[clase_seleccionada][1]));
+		printf("·· SELECCIONADA CLASE");
+		switch(clase_seleccionada){
+			case 0:
+				printf("\033[31m male\033[0m\n");
+				hijoI = (datos *)malloc(sizeof(datos) * entropias_clases[0][1]);
+				hijoD = (datos *)malloc(sizeof(datos) * (tamano - entropias_clases[0][1]));
+				
+                for (int i = 0; i < tamano; i++){
+					if (e[i].male){
+						hijoI[i] = e[i];
+					}
+					else{
+						hijoD[i] = e[i];
+					}
+				}
+				
+				break;
+			case 1:
+				printf("\033[31m book1\033[0m\n");
+				hijoI = (datos *)malloc(sizeof(datos) * entropias_clases[0][1]);
+				hijoD = (datos *)malloc(sizeof(datos) * (tamano - entropias_clases[0][1]));
+				
+				for (int i = 0; i < tamano; i++){
+					if (e[i].book1){
+						hijoI[i] = e[i];
+					}
+					else{
+						hijoD[i] = e[i];
+					}
+				}
+				break;
+				
+			case 2:
+				printf("\033[31m book2\033[0m\n");
+				hijoI = (datos *)malloc(sizeof(datos) * entropias_clases[0][1]);
+				hijoD = (datos *)malloc(sizeof(datos) * (tamano - entropias_clases[0][1]));
+				
+				for (int i = 0; i < tamano; i++){
+					if (e[i].book2){
+						hijoI[i] = e[i];
+					}
+					else{
+						hijoD[i] = e[i];
+					}
+				}
+				break;
+			case 3:
+				printf("\033[31m book3\033[0m\n");
+
+				hijoI = (datos *)malloc(sizeof(datos) * entropias_clases[0][1]);
+				hijoD = (datos *)malloc(sizeof(datos) * (tamano - entropias_clases[0][1]));
+				
+				for (int i = 0; i < tamano; i++){
+					if (e[i].book3){
+						hijoI[i] = e[i];
+					}
+					else{
+						hijoD[i] = e[i];
+					}
+				}
+				break;
+			case 4:
+				printf("\033[31m book4\033[0m\n");
+				hijoI = (datos *)malloc(sizeof(datos) * entropias_clases[0][1]);
+				hijoD = (datos *)malloc(sizeof(datos) * (tamano - entropias_clases[0][1]));
+				
+				for (int i = 0; i < tamano; i++){
+					if (e[i].book4){
+						hijoI[i] = e[i];
+					}
+					else{
+						hijoD[i] = e[i];
+					}
+				}
+				break;
+			case 5:
+				printf("\033[31m book5\033[0m\n");
+				hijoI = (datos *)malloc(sizeof(datos) * entropias_clases[0][1]);
+				hijoD = (datos *)malloc(sizeof(datos) * (tamano - entropias_clases[0][1]));
+				
+				for (int i = 0; i < tamano; i++){
+					if (e[i].book5){
+						hijoI[i] = e[i];
+					}
+					else{
+						hijoD[i] = e[i];
+					}
+				}
+				break;
+			case 6:
+				printf("\033[31m isMarried\033[0m\n");
+				hijoI = (datos *)malloc(sizeof(datos) * entropias_clases[0][1]);
+				hijoD = (datos *)malloc(sizeof(datos) * (tamano - entropias_clases[0][1]));
+				
+				for (int i = 0; i < tamano; i++){
+					if (e[i].isMarried){
+						hijoI[i] = e[i];
+					}
+					else{
+						hijoD[i] = e[i];
+					}
+				}
+				break;
+			case 7:
+				printf("\033[31m isNoble\033[0m\n");
+				hijoI = (datos *)malloc(sizeof(datos) * entropias_clases[0][1]);
+				hijoD = (datos *)malloc(sizeof(datos) * (tamano - entropias_clases[0][1]));
+				
+				for (int i = 0; i < tamano; i++){
+					if (e[i].isNoble){
+						hijoI[i] = e[i];
+					}
+					else{
+						hijoD[i] = e[i];
+					}
+				}
+				break;
+			case 8:
+				printf("\033[31m popularity\033[0m\n");
+				hijoI = (datos *)malloc(sizeof(datos) * entropias_clases[0][1]);
+				hijoD = (datos *)malloc(sizeof(datos) * (tamano - entropias_clases[0][1]));
+				
+				for (int i = 0; i < tamano; i++){
+					if (e[i].numDeadRelations < umb_numDead){
+						hijoI[i] = e[i];
+					}
+					else{
+						hijoD[i] = e[i];
+					}
+				}
+				break;
+			case 9:
+				printf("\033[31m numDeadRelations\033[0m\n");
+				hijoI = (datos *)malloc(sizeof(datos) * entropias_clases[0][1]);
+				hijoD = (datos *)malloc(sizeof(datos) * (tamano - entropias_clases[0][1]));
+				
+				for (int i = 0; i < tamano; i++){
+					if (e[i].popularity < umb_popularity){
+						hijoI[i] = e[i];
+					}
+					else{
+						hijoD[i] = e[i];
+					}
+				}
+				break;
+		}
+		crearArbol(&((*a)->izda), hijoI, entropias_clases[clase_seleccionada][1], totalVivos);
+		crearArbol(&((*a)->dcha), hijoD, tamano - entropias_clases[clase_seleccionada][1], totalVivos);
+	}
+
 }
