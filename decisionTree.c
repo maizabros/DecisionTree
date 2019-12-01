@@ -47,6 +47,7 @@ int main(int argc, char* argv[]){
     printf("VAMOS A PLANTAR UN ARBOL (*w*)\n");
     crearArbol(&arbolito, vector_datos, N, totalVivos);
     crearArbol(&arbolito, vector_datos, N, totalVivos);
+    crearArbol(&arbolito, vector_datos, N, totalVivos);
     printf("HEMOS PLANTADO UN ARBOL (*w*)\n");
     
      
