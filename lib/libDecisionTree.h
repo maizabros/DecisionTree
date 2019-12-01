@@ -18,7 +18,7 @@
 #include "pilaDeadAlive.h"
 #include "arbolBin.h"
 
-#define N 15 
+#define N 20 
 #define FUNCIONES_SELECCION_DE_CLASE(nombreDato, tipoDato)                                                          \
     void cuenta_vivos_muertos_clase_##nombreDato(datos vect[N], tipoDato umbral, cuenta_datos_clases * resultados); \
 
@@ -32,6 +32,7 @@ float entropia_clases(cuenta_datos_clases);
 void calculo_entropia_clases(datos *, float, float **);
 int calculo_minima_entropia(float **);
 void crearArbol(tipoArbolBin *, datos *, int, int);
+void crearArbolDecision(tipoArbolBin * a, datos e[], int tamano);
 
 FUNCIONES_SELECCION_DE_CLASE(male, bool);
 FUNCIONES_SELECCION_DE_CLASE(book1, bool);

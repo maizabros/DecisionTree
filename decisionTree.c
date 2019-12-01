@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include "lib/libDecisionTree.h"
-#include "lib/arbolBin.h"
+//#include "lib/arbolBin.h"
 
 #define BUFF 1024
 
@@ -42,12 +42,15 @@ int main(int argc, char* argv[]){
     }
 
     tipoArbolBin arbolito;
-    nuevoArbolBin(&arbolito);
+    //nuevoArbolBin(&arbolito, vector_datos, N);
+    arbolito = NULL;
     
     printf("VAMOS A PLANTAR UN ARBOL (*w*)\n");
+    printf("TAMAÑO = [%d]\n",N);
     crearArbol(&arbolito, vector_datos, N, totalVivos);
     crearArbol(&arbolito, vector_datos, N, totalVivos);
     crearArbol(&arbolito, vector_datos, N, totalVivos);
+    //crearArbolDecision(&arbolito, vector_datos, N);
     printf("HEMOS PLANTADO UN ARBOL (*w*)\n");
     
      

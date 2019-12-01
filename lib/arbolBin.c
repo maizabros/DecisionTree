@@ -6,8 +6,14 @@ bool esVacio(tipoArbolBin a){
 	return a == NULL;
 }
 
-void nuevoArbolBin(tipoArbolBin *a){
-	*a = NULL;
+void nuevoArbolBin(tipoArbolBin *a, datos * e, int tamano){
+    *a = (celdaArbolBin *)malloc(sizeof(celdaArbolBin));
+    (*a)->elem = (datos *)malloc(sizeof(datos) * tamano);
+    for(int i=0; i<tamano; i++)
+        (*a)->elem[i] = e[i];
+    (*a)->pregunta = -1;
+    (*a)->izda = NULL;
+    (*a)->dcha = NULL;
 }
 
 void errorArbolBin(char s[]){

@@ -3,15 +3,17 @@
 #include <stdbool.h>
 #include "libstruct.h"
 
-typedef datos ** tipoElementoArbolBin;
+typedef datos * tipoElementoArbolBin;
 typedef struct celdaABin{
 	 tipoElementoArbolBin elem;
+     bool isAlive;
+     int pregunta;
 	 struct celdaABin *izda;
 	 struct celdaABin *dcha;
  }celdaArbolBin; 
 typedef celdaArbolBin *tipoArbolBin;
 
-void nuevoArbolBin(tipoArbolBin *);
+void nuevoArbolBin(tipoArbolBin *, datos *, int);
 
 void errorArbolBin(char s[]);
 
