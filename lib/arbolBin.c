@@ -9,7 +9,8 @@ bool esVacio(tipoArbolBin a){
 void nuevoArbolBin(tipoArbolBin *a, datos * e, int tamano){
     *a = (celdaArbolBin *)malloc(sizeof(celdaArbolBin));
     (*a)->elem = (datos **)malloc(sizeof(datos *));
-    (*(*a)->elem) = (datos *)malloc(sizeof(datos)*11);
+    if(tamano > 0)
+        (*(*a)->elem) = (datos *)malloc(sizeof(datos)*tamano);
     //for(int i=0; i<tamano; i++){
     if (e != NULL)
         *(*a)->elem = e;
