@@ -145,7 +145,7 @@ void recogerDatos(datos ** vector_datos, datos ** datos_a_comprobar,char ** head
             (*vector_datos)[i].book5 = atoi(data[5]);
 			(*vector_datos)[i].isMarried = atoi(data[6]);
 			(*vector_datos)[i].isNoble = atoi(data[7]);
-			(*vector_datos)[i].numDeadRelations = atoi(data[8]);
+			(*vector_datos)[i].numDeadRelations = atof(data[8])/100;
 			(*vector_datos)[i].popularity = atof(data[9]);
 			(*vector_datos)[i].isAlive = atoi(data[10]);
 			i++;
@@ -304,7 +304,7 @@ void calculo_entropia_clases(datos * vect, float totalVivos, float entropias_cla
     cuenta_datos_clases res;
     float totalMuertos = N - totalVivos;
     float entropia_C = -(totalVivos/N)*log2(totalVivos/N)-(totalMuertos/N)*log2(totalMuertos/N); 
-    umb_numDead = (int)umbral(vect,"numDeadRelations",(int)totalVivos);
+    umb_numDead = umbral(vect,"numDeadRelations",(int)totalVivos);
     umb_popularity = umbral(vect, "popularity", totalVivos);
     printf("\033[\nUMBRALES:\nnumDead [%d]\npopularity [%f]\n",umb_numDead,umb_popularity);
     /*
@@ -388,11 +388,11 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano){
         //if(tamano == 0) tamano = 20;
         for(int i=0; i<10; i++)
             printf("LA GANCIA DE LA CLASE %d es = [%f]\n",i,medias_ganancias[i][0]/medias_ganancias[i][1]);
-        printf("\033[34mESTOY EN UNA OJA\033[0m\n");
+        printf("\033[34mESTOY EN UNA HOJA\033[0m\n");
         printf("\033[34mTAMAÑO DEL VECTOR = %d\033[0m\n",tamano);
         if(esVacio(*a))
             nuevoArbolBin(a, e, tamano); 
-        printf("\033[34mSIGO EN UNA OJA\033[0m\n");
+        printf("\033[34mSIGO EN UNA HOJA\033[0m\n");
         if(totalVivos >= totalMuertos)
             (*a)->isAlive = true; 
         else
@@ -412,6 +412,8 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano){
 		int clase_seleccionada = calculo_minima_entropia(entropias_clases);
         if (clase_seleccionada == -1){
             printf("\033[32m YA NO HAY MAS CLASES!\033[0m\n");
+            for(int i=0; i<10; i++)
+                printf("LA GANCIA DE LA CLASE %d es = [%f]\n",i,medias_ganancias[i][0]/medias_ganancias[i][1]);
             return;
         }
 
@@ -548,7 +550,7 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano){
                 */
                  // Todo esto es porque peta con numDeadRelations JEJ
                 for (int i = 0; i < tamano; i++){
-					if (e[i].numDeadRelations <= umb_numDead){
+					if (e[i].numDeadRelations > umb_numDead){
 						vectHijoI[x] = e[i];
 						x++;
 					} else {
