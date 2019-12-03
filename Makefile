@@ -43,6 +43,8 @@ cleanLib:
 	@rm -rf lib/*.o
 	$(info Eliminando ejecutables)
 cleanAll: cleanTree cleanLib
+clenaAll: cleanTree cleanLib
+celanAll: cleanTree cleanLib
 ###############################################################
 
 all: lib decisionTree

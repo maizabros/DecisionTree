@@ -1,7 +1,7 @@
 #include "quicksort.h"
 
 #define QUICK_SORT_TIPO(nombreDato)                                     \
-void quicksort_##nombreDato(datos * data[], int ini, int fin){            \
+void quicksort_##nombreDato(datos ** data, int ini, int fin){            \
 	if (ini < fin){                                                     \
 		int i = ini + 1;                                                \
 		int d = fin;                                                    \

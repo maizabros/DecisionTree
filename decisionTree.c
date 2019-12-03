@@ -22,7 +22,7 @@
 //#include "lib/arbolBin.h"
 
 #define BUFF 1024
-#define NUM 20
+#define NUM 1557
 
 int main(int argc, char* argv[]){
 
@@ -49,7 +49,7 @@ int main(int argc, char* argv[]){
     
     printf("VAMOS A PLANTAR UN ARBOL (*w*)\n");
     printf("TAMAÑO = [%d]\n",NUM);
-    print_data(vector_datos, NUM);
+    //print_data(vector_datos, NUM);
     //crearArbol(&arbolito, vector_datos, N, totalVivos);
     //crearArbol(&arbolito, vector_datos, N, totalVivos);
     //crearArbol(&arbolito, vector_datos, N, totalVivos);
