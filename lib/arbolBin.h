@@ -5,7 +5,7 @@
 
 typedef datos * tipoElementoArbolBin;
 typedef struct celdaABin{
-	 tipoElementoArbolBin elem;
+	 tipoElementoArbolBin * elem;
      bool isAlive;
      int pregunta;
 	 struct celdaABin *izda;

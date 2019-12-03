@@ -18,15 +18,14 @@
 #include "pilaDeadAlive.h"
 #include "arbolBin.h"
 
-#define N 20 
 #define FUNCIONES_SELECCION_DE_CLASE(nombreDato, tipoDato)                                                          \
-    void cuenta_vivos_muertos_clase_##nombreDato(datos vect[N], tipoDato umbral, cuenta_datos_clases * resultados); \
+    void cuenta_vivos_muertos_clase_##nombreDato(datos vect[], int tamano, tipoDato umbral, cuenta_datos_clases * resultados); \
 
 
 
-void print_data(datos * vector_datos);
+void print_data(datos * vector_datos, int);
 float umbral(datos *, char*, int);
-void recogerDatos(datos**,char **,int);
+void recogerDatos(datos**,datos**,char **,int);
 float entropia_umbral(tipoElementoPila);
 float entropia_clases(cuenta_datos_clases);
 void calculo_entropia_clases(datos *, float, float **);

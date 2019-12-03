@@ -8,9 +8,13 @@ bool esVacio(tipoArbolBin a){
 
 void nuevoArbolBin(tipoArbolBin *a, datos * e, int tamano){
     *a = (celdaArbolBin *)malloc(sizeof(celdaArbolBin));
-    (*a)->elem = (datos *)malloc(sizeof(datos) * tamano);
-    for(int i=0; i<tamano; i++)
-        (*a)->elem[i] = e[i];
+    (*a)->elem = (datos **)malloc(sizeof(datos *));
+    (*(*a)->elem) = (datos *)malloc(sizeof(datos)*11);
+    //for(int i=0; i<tamano; i++){
+    if (e != NULL)
+        *(*a)->elem = e;
+        //(*a)->elem[i] = (datos *)malloc(sizeof(datos));
+    //}
     (*a)->pregunta = -1;
     (*a)->izda = NULL;
     (*a)->dcha = NULL;
@@ -23,7 +27,7 @@ void errorArbolBin(char s[]){
 
 
 tipoElementoArbolBin devolverRaiz(tipoArbolBin a){
-	return a->elem;
+	return *a->elem;
 }
 /*
 void preorden(tipoArbolBin a){
