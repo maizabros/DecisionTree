@@ -374,7 +374,7 @@ void crearArbolDecision(tipoArbolBin * a, datos e[], int tamano){
     float entropia_C = -(totalVivos/N)*log2(totalVivos/N)-(totalMuertos/N)*log2(totalMuertos/N); 
     printf( "FUNCION CREAR ARBOL : ENTROPIA_C = [%f]\n",entropia_C);
     if (entropia_C <= 0.0f || tamano == 0 || isnan(entropia_C)){
-        if(tamano == 0) tamano = 1;
+        //if(tamano == 0) tamano = 1;
         printf("\033[34mESTOY EN UNA OJA\033[0m\n");
         printf("\033[34mTAMAÑO DEL VECTOR = %d\033[0m\n",tamano);
         if(esVacio(*a))
