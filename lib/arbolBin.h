@@ -8,6 +8,7 @@ typedef struct celdaABin{
 	 tipoElementoArbolBin * elem;
      bool isAlive;
      int pregunta;
+     float umbral;
 	 struct celdaABin *izda;
 	 struct celdaABin *dcha;
  }celdaArbolBin; 

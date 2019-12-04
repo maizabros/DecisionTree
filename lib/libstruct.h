@@ -10,8 +10,8 @@ typedef struct dat{
 	bool book5;
 	bool isMarried;
 	bool isNoble;
-	float numDeadRelations;
-	float popularity;
+	double numDeadRelations;
+	double popularity;
 	bool isAlive;
 }datos;
 typedef struct cuenta_datos{

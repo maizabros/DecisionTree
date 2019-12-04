@@ -13,6 +13,7 @@ void nuevoArbolBin(tipoArbolBin *a, datos * e, int tamano){
         (*(*a)->elem) = (datos *)malloc(sizeof(datos)*tamano);
         *(*a)->elem = e;
     }
+    (*a)->umbral = -1.0f;
     (*a)->pregunta = -1;
     (*a)->izda = NULL;
     (*a)->dcha = NULL;
