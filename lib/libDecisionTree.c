@@ -35,6 +35,7 @@ int umb_numDead;
 bool clase_utilizada[10] = {false};
 double medias_ganancias[10][2] = {{0.0}};
 int aciertos = 0;
+int numero_de_datos_en_hojas = 0; 
 /* ***************************************************************************************************************** */
 /* **   A PARTIR DE AQUI HASTA EL SIGUIENTE SEPARADOR SON LAS DECLARACIONES DE FUNCIONES VARIABLES SEGUN ENTRADA  ** */
 /* ***************************************************************************************************************** */
@@ -44,8 +45,8 @@ int aciertos = 0;
         (*resultados).clase_no_vivos=0;                                                                             \
         (*resultados).clase_si_muertos=0;                                                                           \
         (*resultados).clase_no_muertos=0;                                                                           \
-        for (int i = 0; i < tamano; i++) {                                                                               \
-            if(umbral == 0){                                                                                        \
+        for (int i = 0; i < tamano; i++) {                                                                          \
+            if(umbral == 0.0f){																						\
                 if(vect[i].nombreDato <= umbral){                                                                   \
                     if(vect[i].isAlive == 1)                                                                        \
                         (*resultados).clase_no_vivos++;                                                             \
@@ -304,7 +305,7 @@ void calculo_entropia_clases(datos * vect, double totalVivos, double entropias_c
     double entropia_C = -(totalVivos/N)*log2(totalVivos/N)-(totalMuertos/N)*log2(totalMuertos/N); 
     umb_numDead = umbral(vect,"numDeadRelations",(int)totalVivos);
     umb_popularity = umbral(vect, "popularity", totalVivos);
-    printf("\nUMBRALES:\nnumDead [%d]\npopularity [%.18F]\n",umb_numDead,umb_popularity);
+    printf("\nUMBRALES:\nnumDead [%d]\npopularity [%.18F]\n",(int)(umb_numDead*10.0f),umb_popularity);
     /*
     *entropias_clases = (double**)malloc(sizeof(double*)*10);
     for(int i=0; i<10; i++){
@@ -362,7 +363,7 @@ int calculo_minima_entropia(double entropias_clases[10][2]){
             min_entropia = entropias_clases[i][0];
         }
     }
-    if(clase_seleccionada != -1)
+    if(clase_seleccionada != -1 && clase_seleccionada < 8)
         clase_utilizada[clase_seleccionada] = true;
 	return clase_seleccionada;
 }
@@ -382,20 +383,21 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano){
     double totalMuertos = tamano - totalVivos;
     double entropia_C = -(totalVivos/N)*log2(totalVivos/N)-(totalMuertos/N)*log2(totalMuertos/N); 
     printf( "FUNCION CREAR ARBOL : ENTROPIA_C = [%.18F]\n",entropia_C);
-    if (entropia_C <= 0.0f || tamano == 0 || isnan(entropia_C)){
+    if (tamano == totalVivos || tamano == totalMuertos || tamano == 0 || isnan(entropia_C)){
         //if(tamano == 0) tamano = 20;
-        for(int i=0; i<10; i++)
-            printf("LA GANCIA DE LA CLASE %d es = [%.18F]\n",i,medias_ganancias[i][0]/medias_ganancias[i][1]);
-        printf("\033[34mESTOY EN UNA HOJA\033[0m\n");
-        printf("\033[34mTAMAÑO DEL VECTOR = %d\033[0m\n",tamano);
+        //~ for(int i=0; i<10; i++)
+            //~ printf("LA GANCIA DE LA CLASE %d es = [%.18F]\n",i,medias_ganancias[i][0]/medias_ganancias[i][1]);
+        //~ printf("\033[34mESTOY EN UNA HOJA\033[0m\n");
+        //~ printf("\033[34mTAMAÑO DEL VECTOR = %d\033[0m\n",tamano);
         if(esVacio(*a))
             nuevoArbolBin(a, e, tamano); 
-        printf("\033[34mSIGO EN UNA HOJA\033[0m\n");
+        //~ printf("\033[34mSIGO EN UNA HOJA\033[0m\n");
         if(totalVivos >= totalMuertos)
             (*a)->isAlive = true; 
         else
             (*a)->isAlive = false; 
         printf("\033[32m        SOY UNA HOJA\033[0m\n");
+        numero_de_datos_en_hojas += tamano;
         //free((*a)->elem);
         return;
     } else {
@@ -408,15 +410,19 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano){
 		datos * vectHijoI;
 		datos * vectHijoD;
 		int clase_seleccionada = calculo_minima_entropia(entropias_clases);
-        if (clase_seleccionada == -1){
+        if (entropias_clases[clase_seleccionada][0] < 0.0001f){
+			        numero_de_datos_en_hojas += tamano;
+
             printf("\033[32m YA NO HAY MAS CLASES!\033[0m\n");
-            for(int i=0; i<10; i++)
-                printf("LA GANCIA DE LA CLASE %d es = [%.18F]\n",i,medias_ganancias[i][0]/medias_ganancias[i][1]);
+            //~ for(int i=0; i<10; i++)
+                //~ printf("LA GANCIA DE LA CLASE %d es = [%.18F]\n",i,medias_ganancias[i][0]/medias_ganancias[i][1]);
             if(totalVivos >= totalMuertos)
                 (*a)->isAlive = true; 
             else
                 (*a)->isAlive = false; 
             printf("\033[32m        SOY UNA HOJA\033[0m\n");
+            if(clase_seleccionada!= -1)
+				clase_utilizada[clase_seleccionada] = false;
             return;
         }
 
@@ -531,15 +537,28 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano){
 				break;
 			case 8:
 				printf("\033[31m popularity");
-                for (int i = 0; i < tamano; i++){
-					if (e[i].popularity >= umb_popularity){
-						vectHijoI[x] = e[i];
-						x++;
-					} else {
-						vectHijoD[y] = e[i];
-						y++;
+				if (umb_popularity != 0.0f){
+					for (int i = 0; i < tamano; i++){
+						if (e[i].popularity >= umb_popularity){
+							vectHijoI[x] = e[i];
+							x++;
+						} else {
+							vectHijoD[y] = e[i];
+							y++;
+						}
+						(*a)->umbral = umb_popularity;
 					}
-                    (*a)->umbral = umb_popularity;
+				} else {
+					for (int i = 0; i < tamano; i++){
+						if (e[i].popularity > umb_popularity){
+							vectHijoI[x] = e[i];
+							x++;
+						} else {
+							vectHijoD[y] = e[i];
+							y++;
+						}
+						(*a)->umbral = umb_popularity;
+					}
 				}
 				break;
 			case 9:
@@ -569,12 +588,12 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano){
 
     
         printf("  entropia[%.18F] clase_si[%d]\033[0m\n",entropias_clases[clase_seleccionada][0], x); 
-        /* 
-		printf("AL HIJO IZQUIERDO VAN ESTOS ELEMENTOS: ");
+        printf("UMB_POP = [%F]\n",umb_popularity);
+        printf("AL HIJO IZQUIERDO VAN ESTOS ELEMENTOS: ");
 		print_data(vectHijoI, x); 
 		printf("AL HIJO DERECHO VAN ESTOS ELEMENTOS: ");
 		print_data(vectHijoD, y); 
-        */
+        
 		
         printf("    \033[34m\033[21mHIJO IZQUIERDO\033[0m\n");
 		crearArbolDecision(&((*a)->izda), vectHijoI, x);
@@ -593,8 +612,8 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano){
 bool asignarIsAlive(datos dato, tipoArbolBin a){
     bool isAliveParaElDato;
     if(a->pregunta == -1){
-        printf("ESTOY EN UNA HOJA\n");
-        printf("%s\n", a->isAlive ? "\033[32mESTOY VIVO\033[0m" : "\033[31mESTOY MUERTO\033[0m");
+        //~ printf("ESTOY EN UNA HOJA\n");
+        //~ printf("%s\n", a->isAlive ? "\033[32mESTOY VIVO\033[0m" : "\033[31mESTOY MUERTO\033[0m");
         return a->isAlive;
     } else {
         bool hijoIzq = false;
@@ -653,7 +672,7 @@ bool asignarIsAlive(datos dato, tipoArbolBin a){
 void testData(datos * testData, tipoArbolBin a){
 
     FILE * f = fopen("csv/testDataAsignado.csv","w+");
-    for (int i=0; i<C_TEST; i++){
+    for (int i=0; i<C_ENTRENO; i++){
         bool b = asignarIsAlive(testData[i],a);
         if (testData[i].isAlive == b) aciertos++;
         testData[i].isAlive = b;
@@ -670,6 +689,6 @@ void testData(datos * testData, tipoArbolBin a){
         fprintf(f,"%d\n",testData[i].isAlive);
     } 
 
-    printf("\033[32mTOTAL ACIERTOS = [%d]\nPORCENTAJE ACIERTOS = [%.18F]\033[0m\n",aciertos,(double)aciertos/(double)C_TEST);
-
+    printf("\033[32mTOTAL ACIERTOS = [%d]\nPORCENTAJE ACIERTOS = [%.18F]\033[0m\n",aciertos,(double)aciertos/(double)C_ENTRENO);
+	printf("NUM TOTAL DATOS EN HOJAS %d\n",numero_de_datos_en_hojas);
 }

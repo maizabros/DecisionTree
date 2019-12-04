@@ -50,7 +50,7 @@ int main(int argc, char* argv[]){
     printf("TAMAÑO = [%d]\n",NUM);
     crearArbolDecision(&arbolito, vector_datos, NUM);
     printf("HEMOS PLANTADO UN ARBOL (*w*)\n");
-    testData(datos_a_comprobar, arbolito);
+    testData(vector_datos, arbolito);
     
     
 }
