@@ -41,6 +41,7 @@ cleanTree:
 	$(info Eliminando objetos de las librerias)
 cleanLib: 
 	@rm -rf lib/*.o
+	@rm -rf csv/errores_minEnt_arboles.csv
 	$(info Eliminando ejecutables)
 cleanAll: cleanTree cleanLib
 clenaAll: cleanTree cleanLib

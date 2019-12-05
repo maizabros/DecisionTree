@@ -16,18 +16,5 @@ typedef celdaArbolBin *tipoArbolBin;
 
 void nuevoArbolBin(tipoArbolBin *, datos *, int);
 
-void errorArbolBin(char s[]);
-
-tipoElementoArbolBin devolverRaiz(tipoArbolBin);
-
 bool esVacio(tipoArbolBin);
-/*
-void preorden(tipoArbolBin);
-
-void inorden(tipoArbolBin);
-
-void postorden(tipoArbolBin);
-*/
-//void insertar(tipoArbolBin *, tipoElementoArbolBin, int);
-//
 #endif

@@ -3,6 +3,7 @@
   VERSION: 1.0.0
   HISTORICO:
   Creado por Aránzazu Jurío Munárriz el 09/09/19.
+  Modificado por Erick Martinez el 21/11/19
   
   Este fichero se crea sólo con intenciones de coordinación docente y como
   ayuda a sus alumnos y alumnas. La autora desautoriza expresamente su difusión, copia
@@ -19,10 +20,12 @@ typedef struct tipoElementoPila_t{
 	double muertos_Izq;	
 	double muertos_Dch;	
 }tipoElementoPila;
+
 typedef struct celdaP{
 	 tipoElementoPila elem;
 	 struct celdaP *sig;
  } celdaPila; 
+
 typedef celdaPila* tipoPila;
 
 void nuevaPila(tipoPila *);

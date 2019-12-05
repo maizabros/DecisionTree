@@ -23,7 +23,6 @@
 #include "quicksort.h"
 #include "libfrag.h"
 #include "pilaDeadAlive.h"
-//#include "libDecisionTree.h"
 #include "arbolBin.h"
 
 #define C_ENTRENO 1362 
@@ -34,11 +33,7 @@
 int N = C_ENTRENO;
 double umb_popularity;
 int umb_numDead;
-bool clase_utilizada[10] = {false};
-double medias_ganancias[10][2] = {{0.0}};
 int aciertos = 0;
-int numero_de_datos_en_hojas = 0; 
-double pruebas_arboles[2] = {0.0f};
 /* ***************************************************************************************************************** */
 /* **   A PARTIR DE AQUI HASTA EL SIGUIENTE SEPARADOR SON LAS DECLARACIONES DE FUNCIONES VARIABLES SEGUN ENTRADA  ** */
 /* ***************************************************************************************************************** */
@@ -138,7 +133,7 @@ void recogerDatos(datos ** vector_datos, datos ** datos_ajuste, datos ** datos_t
 	int i=0;
 	while(fgets(buffer,sizeof(char)*BUFF,stdin) != NULL){
 			
-            if(i == N) break; // Asi podemos entrenarlo con cualquier cantidad de datos
+            if(i == C_ENTRENO) break;
 			char ** data = fragBufferExtract(buffer);
 			(*vector_datos)[i].male = atoi(data[0]);
 			(*vector_datos)[i].book1 = atoi(data[1]);
@@ -155,7 +150,7 @@ void recogerDatos(datos ** vector_datos, datos ** datos_ajuste, datos ** datos_t
 	}
     i = 0;
 	do{
-            if(i == C_AJUSTE) break; // Asi podemos entrenarlo con cualquier cantidad de datos
+            if(i == C_AJUSTE) break;
 			char ** data = fragBufferExtract(buffer);
 
 			(*datos_ajuste)[i].male = atoi(data[0]);
@@ -173,7 +168,7 @@ void recogerDatos(datos ** vector_datos, datos ** datos_ajuste, datos ** datos_t
     } while(fgets(buffer,sizeof(char)*BUFF,stdin) != NULL);
     i = 0;
 	do{
-            if(i == C_TEST) break; // Asi podemos entrenarlo con cualquier cantidad de datos
+            if(i == C_TEST) break;
 			char ** data = fragBufferExtract(buffer);
 			
 			(*datos_test)[i].male = atoi(data[0]);
@@ -218,13 +213,12 @@ double entropia_clases(cuenta_datos_clases res){
         arg8 = 0;
     } else if(res.clase_no_vivos == 0) arg6 = 0;
     else if(res.clase_no_muertos == 0) arg8 = 0;
-	//printf("CLASE[arg1: %lf, arg2: %lf, arg3: %lf, arg4: %lf, arg5: %lf, arg6: %lf, arg7: %lf, arg8: %lf]\n",arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8);
 
-    //printf("ENTROPIA_CLASE: [%.18F]\n\n",((totalSi/N) * ((arg1 * arg2) + (arg3 * arg4)) + (totalNo/N) * ((arg5 * arg6) + (arg7 * arg8))));
     return ((totalSi/N) * ((arg1 * arg2) + (arg3 * arg4)) + (totalNo/N) * ((arg5 * arg6) + (arg7 * arg8))); 
 }
 
 double entropia_umbral(tipoElementoPila x){
+
 	double arg1 = ((double)(x.vivos_Izq+x.muertos_Izq)/N);
 	double arg2 = (x.vivos_Izq/(double)(x.vivos_Izq+x.muertos_Izq));
 	double arg3;
@@ -244,17 +238,16 @@ double entropia_umbral(tipoElementoPila x){
     if (x.muertos_Dch > 0) arg10 = log2((double)(x.vivos_Dch+x.muertos_Dch)/x.muertos_Dch);
     else arg10 = 0;
 	
-	//printf("UMBRAL[arg1: %lf, arg2: %lf, arg3: %lf, arg4: %lf, arg5: %lf, arg6: %lf, arg7: %lf, arg8: %lf, arg9: %lf, arg10: %lf]\n",arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10);
-	
 	return ((arg1)*(arg2*arg3+arg4*arg5) + (arg6)*(arg7*arg8 + arg9*arg10));
 }
 
 double umbral(datos * vect, char* str_umbral, int totalVivos){
+
 	double total_Muertos;
-    int PosEntMin=0;
+    int PosEntMin = 0;
 	bool ant,sig;
-	double Ent=100,umbral=0;
-	double MinEnt=100;
+	double Ent = 100, umbral = 0;
+	double MinEnt = 100;
 	
     if(strcmp(str_umbral, "popularity") == 0)
         quicksort_popularity(&vect, 0, N-1);
@@ -264,29 +257,28 @@ double umbral(datos * vect, char* str_umbral, int totalVivos){
         printf("\033[31mERROR en UMBRAL:\033[0m clase no válida\nSaliendo...\n\n");
         exit(EXIT_FAILURE);
     }
-    //print_data(vect);
 
-
-	total_Muertos=N-totalVivos;
+	total_Muertos = N - totalVivos;
 	tipoPila p;
 	nuevaPila(&p);
-	ant=(vect[0]).isAlive;
-	sig=(vect[1]).isAlive;
+	ant = (vect[0]).isAlive;
+	sig = (vect[1]).isAlive;
 	tipoElementoPila x;
-    x.vivos_Izq=1;
-    if(ant==0) x.muertos_Izq=1;
-    else x.muertos_Izq=0;
-    x.vivos_Dch=0;
-    x.muertos_Dch=0;
+    x.vivos_Izq = 1;
+
+    if(ant == 0) x.muertos_Izq = 1;
+    else x.muertos_Izq = 0;
+    x.vivos_Dch = 0;
+    x.muertos_Dch = 0;
 	
     for(int i=1; i<N; i++){
-		if(ant!=sig){
-			x.muertos_Dch=total_Muertos-x.muertos_Izq;
-			x.vivos_Dch=totalVivos-x.vivos_Izq;
-			x.pos=i;
+		if(ant != sig){
+			x.muertos_Dch = total_Muertos - x.muertos_Izq;
+			x.vivos_Dch = totalVivos - x.vivos_Izq;
+			x.pos = i;
 			apilar(&p,x);
 		}
-		if(vect[i].isAlive==1){
+		if(vect[i].isAlive == 1){
 			x.vivos_Izq++;
 		} else{
 			x.muertos_Izq++;
@@ -297,19 +289,17 @@ double umbral(datos * vect, char* str_umbral, int totalVivos){
 
 	while(!esNulaPila(p)){
 		x = cima(p);
-        Ent=entropia_umbral(x);
+        Ent = entropia_umbral(x);
 		if(Ent<MinEnt){
-            //printf("ENTROPIA %s: [%.18F]\n",str_umbral,Ent);
-			MinEnt=Ent;
-			PosEntMin=x.pos;
+			MinEnt = Ent;
+			PosEntMin = x.pos;
 		}
         desapilar(&p);
 	}
 	Ent=entropia_umbral(x);
 	if(Ent<MinEnt){
-            //printf("ENTROPIA %s: [%.18F]\n",str_umbral,Ent);
-			MinEnt=Ent;
-			PosEntMin=x.pos;
+			MinEnt = Ent;
+			PosEntMin = x.pos;
 	} //Para tratar el ultimo elemento de la pila porque se quedaba sin tratar
 	//Cálculo del umbral
     if (strcmp(str_umbral,"numDeadRelations") == 0){
@@ -331,13 +321,7 @@ void calculo_entropia_clases(datos * vect, double totalVivos, double entropias_c
     double entropia_C = arg1 + arg2; 
     umb_numDead = umbral(vect,"numDeadRelations",(int)totalVivos);
     umb_popularity = umbral(vect, "popularity", totalVivos);
-    //printf("\nUMBRALES:\nnumDead [%d]\npopularity [%.18F]\n",(int)(umb_numDead*10.0f),umb_popularity);
-    /*
-    *entropias_clases = (double**)malloc(sizeof(double*)*10);
-    for(int i=0; i<10; i++){
-        (*entropias_clases)[i] = (double *)malloc(sizeof(double)*2);
-    }
-    */
+
     cuenta_vivos_muertos_clase_male(vect, N, 1, &res); 
     entropias_clases[0][0] = entropia_C - entropia_clases(res);
     entropias_clases[0][1] = res.clase_si_vivos + res.clase_si_muertos;
@@ -368,41 +352,25 @@ void calculo_entropia_clases(datos * vect, double totalVivos, double entropias_c
     cuenta_vivos_muertos_clase_numDeadRelations(vect, N, umb_numDead, &res); 
     entropias_clases[9][0] = entropia_C - entropia_clases(res);
     entropias_clases[9][1] = res.clase_si_vivos + res.clase_si_muertos;
-    //printf("\033[31m");
-    for (int i = 0; i < 10; i++) {
-       //printf("Clase %d: [%.18F][%d]",i,entropias_clases[i][0], (int)entropias_clases[i][1]); 
-       //printf("[%s]\n",clase_utilizada[i] ? " true" : "false");
-        medias_ganancias[i][0] += entropias_clases[i][0];
-        medias_ganancias[i][1]++;
-    }
-    printf("\033[0m");
+
 }
 
-int calculo_minima_entropia(double entropias_clases[10][2]){
-	double min_entropia = -0.1f; //Para que cuando haya 0 al menos elija a una
+int calculo_maxima_ganancia(double entropias_clases[10][2]){
+	double max_ganancia = -0.1f; //Para que cuando haya 0 al menos elija a una
     int clase_seleccionada = -1;
-    //printf("DATOS POR CLASE:\n");
+
     for(int i = 0; i<10; i++){
-        //printf("CLASE %d: [%.18F]\n",i+1,entropias_clases[i][0]);
-        if(min_entropia < entropias_clases[i][0] /* && !clase_utilizada[i] */){
+        if(max_ganancia < entropias_clases[i][0]){
             clase_seleccionada = i;
-            min_entropia = entropias_clases[i][0];
+            max_ganancia = entropias_clases[i][0];
         }
     }
-    /*
-    if(clase_seleccionada != -1 && clase_seleccionada < 8)
-        clase_utilizada[clase_seleccionada] = true;
-    */
+
 	return clase_seleccionada;
 }
 
 void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
-    /*
-    printf("\033[34m\033[21m");
-    print_data(e,tamano);
-    printf("\033[0m");
-    */
-    srand (time(NULL)); //Por si hay que decidir 50/50
+
     N = tamano;
     double totalVivos = 0;
     for(int i=0; i<tamano; i++){
@@ -415,41 +383,30 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
     double arg2 = -(totalMuertos/N)*log2(totalMuertos/N);
     if (totalMuertos== 0) arg2 = 0;
     double entropia_C = arg1 + arg2; 
-    //printf( "FUNCION CREAR ARBOL : ENTROPIA_C = [%.18F]\n",entropia_C);
     if (tamano == 0 || isnan(entropia_C) || entropia_C <= entMin){
         if(esVacio(*a))
             nuevoArbolBin(a, e, tamano); 
 
-        //printf("\033[32m        SOY UNA HOJA\033[0m\n");
         if(entropia_C > 0.0f){
-            //printf("\033[32mCON ADORNOOOOOOOS\033[0m\n");
             if(totalVivos >= totalMuertos)
                 (*a)->isAlive = true; 
             else
                 (*a)->isAlive = false; 
-            //printf("%s\n", (*a)->isAlive ? "true " : "false");
         } else
             (*a)->isAlive = e[0].isAlive;
-        numero_de_datos_en_hojas += tamano;
         return;
 
     } else {
         if(esVacio(*a))
             nuevoArbolBin(a, e, tamano); 
 		double entropias_clases[10][2];
-        //printf("\033[32m");
 		calculo_entropia_clases(e , (double) totalVivos, entropias_clases);
-        //printf("\033[0m");
+
 		datos * vectHijoI;
 		datos * vectHijoD;
-		int clase_seleccionada = calculo_minima_entropia(entropias_clases);
+		int clase_seleccionada = calculo_maxima_ganancia(entropias_clases);
         if (entropias_clases[clase_seleccionada][0] <= 0.0001f  || entropia_C <= entMin){
-			        numero_de_datos_en_hojas += tamano;
 
-            //printf("\033[32m YA NO HAY MAS CLASES!\033[0m\n");
-            //~ for(int i=0; i<10; i++)
-                //~ printf("LA GANCIA DE LA CLASE %d es = [%.18F]\n",i,medias_ganancias[i][0]/medias_ganancias[i][1]);
-            //printf("\033[32m        SOY UNA HOJA\033[0m\n");
             if(entropia_C > 0.0f){
                 if(totalVivos >= totalMuertos)
                    (*a)->isAlive = true; 
@@ -462,18 +419,13 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
         }
 
         (*a)->pregunta = clase_seleccionada; //Asigna la pregunta que se hará para recorrer el arbol
-        //printf("\033[33m    EL TAMAÑO DE HIJOI = %d\n   EL TAMAÑO DE HIJOD = %d\033[0m\n",(int)entropias_clases[clase_seleccionada][1], (int)(tamano - (int)entropias_clases[clase_seleccionada][1]));
 
 		vectHijoI = (datos *)malloc(sizeof(datos) * (int)entropias_clases[clase_seleccionada][1]);
 		vectHijoD = (datos *)malloc(sizeof(datos) * (tamano - (int)entropias_clases[clase_seleccionada][1]));
-
-        //printf("\033[33m    EL TAMAÑO DEL VECTOR HIJOI = %lu\n   EL TAMAÑO DEL VECTOR HIJOD = %lu\033[0m\n",sizeof(*vectHijoI), sizeof(*vectHijoD));
         
-		printf("·· SELECCIONADA CLASE: ");
 		int x = 0, y = 0;
 		switch(clase_seleccionada){
 			case 0:
-				printf("\033[31m male");
                 for (int i = 0; i < tamano; i++){
 					if (e[i].male){
 						vectHijoI[x] = e[i];
@@ -485,7 +437,6 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
 				}
 				break;
 			case 1:
-				printf("\033[31m book1");
                 for (int i = 0; i < tamano; i++){
 					if (e[i].book1){
 						vectHijoI[x] = e[i];
@@ -498,7 +449,6 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
 				break;
 				
 			case 2:
-				printf("\033[31m book2");
                 for (int i = 0; i < tamano; i++){
 					if (e[i].book2){
 						vectHijoI[x] = e[i];
@@ -510,7 +460,6 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
 				}
 				break;
 			case 3:
-				printf("\033[31m book3");
                 for (int i = 0; i < tamano; i++){
 					if (e[i].book3){
 						vectHijoI[x] = e[i];
@@ -522,7 +471,6 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
 				}
 				break;
 			case 4:
-				printf("\033[31m book4");
                 for (int i = 0; i < tamano; i++){
 					if (e[i].book4){
 						vectHijoI[x] = e[i];
@@ -534,7 +482,6 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
 				}
 				break;
 			case 5:
-				printf("\033[31m book5");
                 for (int i = 0; i < tamano; i++){
 					if (e[i].book5){
 						vectHijoI[x] = e[i];
@@ -546,7 +493,6 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
 				}
 				break;
 			case 6:
-				printf("\033[31m isMarried");
                 for (int i = 0; i < tamano; i++){
 					if (e[i].isMarried){
 						vectHijoI[x] = e[i];
@@ -558,7 +504,6 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
 				}
 				break;
 			case 7:
-				printf("\033[31m isNoble");
                 for (int i = 0; i < tamano; i++){
 					if (e[i].isNoble){
 						vectHijoI[x] = e[i];
@@ -570,7 +515,6 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
 				}
 				break;
 			case 8:
-				printf("\033[31m popularity");
 				if (umb_popularity != 0.0f){
 					for (int i = 0; i < tamano; i++){
 						if (e[i].popularity >= umb_popularity){
@@ -596,7 +540,6 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
 				}
 				break;
 			case 9:
-				printf("\033[31m numDeadRelations");
 				if (umb_numDead != 0.0f){
                     for (int i = 0; i < tamano; i++){
                         if (e[i].numDeadRelations >= umb_numDead){
@@ -623,28 +566,8 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
 				break;
 		}
 
-        printf("\n");
-/*   
-        printf("  entropia[%.18F] clase_si[%d]\033[0m\n",entropias_clases[clase_seleccionada][0], x); 
-        printf("UMB_POP = [%F]\n",umb_popularity);
-        printf("AL HIJO IZQUIERDO VAN ESTOS ELEMENTOS: ");
-		print_data(vectHijoI, x); 
-		printf("AL HIJO DERECHO VAN ESTOS ELEMENTOS: ");
-		print_data(vectHijoD, y); 
-*/      
-		
-        //printf("    \033[34m\033[21mHIJO IZQUIERDO\033[0m\n");
 		crearArbolDecision(&((*a)->izda), vectHijoI, x, entMin);
-        //free(vectHijoI);
-        //printf("    \033[34m\033[21mHIJO DERECHO\033[0m\n");
 		crearArbolDecision(&((*a)->dcha), vectHijoD, y, entMin); 
-        //free(vectHijoD);
-        /*
-        if(clase_seleccionada!= -1)
-            clase_utilizada[clase_seleccionada] = false;
-        */
-        //free(e);
-        
     } 
 }
 
@@ -652,8 +575,6 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
 bool asignarIsAlive(datos dato, tipoArbolBin a){
     bool isAliveParaElDato;
     if(a->pregunta == -1){
-        //~ printf("ESTOY EN UNA HOJA\n");
-        //~ printf("%s\n", a->isAlive ? "\033[32mESTOY VIVO\033[0m" : "\033[31mESTOY MUERTO\033[0m");
         return a->isAlive;
     } else {
         bool hijoIzq = false;
@@ -720,11 +641,11 @@ bool asignarIsAlive(datos dato, tipoArbolBin a){
 
 double testData(datos * testData, tipoArbolBin a, int tamano){
 
+    aciertos=0.0f;
     FILE * f = fopen("csv/testDataAsignado.csv","w+");
     for (int i=0; i<tamano; i++){
         bool b = asignarIsAlive(testData[i],a);
         if (testData[i].isAlive == b) aciertos++;
-        //else printDato(testData[i]);
         testData[i].isAlive = b;
         fprintf(f,"%d,",testData[i].male);
         fprintf(f,"%d,",testData[i].book1);
@@ -744,16 +665,15 @@ double testData(datos * testData, tipoArbolBin a, int tamano){
     printf("NUMERO DE DATOS DE TEST = [%d]\n",C_TEST);
     printf("\033[32mTOTAL ACIERTOS = [%d]\n",aciertos);
     printf("PORCENTAJE ACIERTOS = [%.18F]\033[0m\n",(double)aciertos/(double)tamano);
-    aciertos=0.0f;
-    return ((double)aciertos/(double)tamano);
+    return (1.0f - ((double)aciertos/(double)tamano));
 }
 
 void writeTreeCSV(double e[4][2]){
 
-    FILE * f = fopen("csv/errores_minEnt_arboles.csv", "a+");
+    FILE * f = fopen("csv/errores_minEnt_arboles.csv", "a");
 
     for (int i=0; i<4; i++)
-        fprintf(f,"%F %F HOLI",e[i][0], e[i][1]);
+        fprintf(f,"%F %F ",e[i][0], e[i][1]);
     fprintf(f,"\n");
 
 }

@@ -29,7 +29,7 @@ void recogerDatos(datos**,datos**,datos**,char **,int);
 float entropia_umbral(tipoElementoPila);
 float entropia_clases(cuenta_datos_clases);
 void calculo_entropia_clases(datos *, float, float **);
-int calculo_minima_entropia(float **);
+int calculo_maxima_ganancia(float **);
 void crearArbolDecision(tipoArbolBin *, datos *, int, int);
 bool asignarIsAlive(datos, tipoArbolBin);
 double testData(datos *, tipoArbolBin, int);
