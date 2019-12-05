@@ -13,11 +13,11 @@
 #include <stdbool.h>
 
 typedef struct tipoElementoPila_t{
-	float pos;
-	int vivos_Izq;	
-	int vivos_Dch;	
-	int muertos_Izq;	
-	int muertos_Dch;	
+	int pos;
+	double vivos_Izq;	
+	double vivos_Dch;	
+	double muertos_Izq;	
+	double muertos_Dch;	
 }tipoElementoPila;
 typedef struct celdaP{
 	 tipoElementoPila elem;

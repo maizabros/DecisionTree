@@ -19,24 +19,88 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include "lib/libDecisionTree.h"
+//#include "lib/arbolBin.h"
 
-#define C_ENTRENO 11
-#define N 11 
 #define BUFF 1024
+#define NUM 1362 
 
 int main(int argc, char* argv[]){
 
     char * headers;
 	datos * vector_datos;
+	datos * datos_ajuste;
+	datos * datos_test;
+    double errores_minEnt_arboles[4][2];
+
     if(argc < 2){
 		printf("Numero de argumentos invalido.\nNecesita indicar fichero CSV de datos.\n");
 		return EXIT_FAILURE;
 	} else {
         int fd = open(argv[1],O_RDONLY, 0400);
-        recogerDatos(&vector_datos,&headers,fd);
+        recogerDatos(&vector_datos,&datos_ajuste,&datos_test,&headers,fd);
 	}
 
-    int umb_numDead =(int)umbral(vector_datos,"numDeadRelations");
-    float umb_pop = umbral(vector_datos,"popularity");
-    printf("UMBRALES:\n     popularity: %f\nnumDeadRelations: %d\n",umb_pop,umb_numDead);
+    int totalVivos = 0;
+    for(int i=0; i<NUM; i++){
+        if(vector_datos[i].isAlive == 1)
+            totalVivos++;
+    }
+
+    double minEnt;
+    tipoArbolBin arbolito;
+    arbolito = NULL;
+    printf("\033[32mVAMOS A PLANTAR UNA ARBOLEDA ~(*w*)~\033[0m\n");
+    
+    printf("VAMOS A PLANTAR UN ARBOL (*w*)\n");
+    printf("TAMAÑO = [%d]\n",NUM);
+
+    minEnt = 0.00001f;
+    crearArbolDecision(&arbolito, vector_datos, NUM, minEnt);
+    printf("HEMOS PLANTADO UN ARBOL (*w*)\n");
+    errores_minEnt_arboles[0][0] = minEnt; 
+    errores_minEnt_arboles[0][1] = testData(vector_datos, arbolito, 1362);
+    errores_minEnt_arboles[1][0] = minEnt; 
+    errores_minEnt_arboles[1][1] = testData(datos_ajuste, arbolito, 292);
+    errores_minEnt_arboles[2][0] = minEnt; 
+    errores_minEnt_arboles[2][1] = testData(datos_test, arbolito, 292);
+    writeTreeCSV(errores_minEnt_arboles);
+    arbolito = NULL; 
+
+    minEnt = 0.0001f;
+    crearArbolDecision(&arbolito, vector_datos, NUM, minEnt);
+    printf("HEMOS PLANTADO UN ARBOL (*w*)\n");
+    errores_minEnt_arboles[0][0] = minEnt; 
+    errores_minEnt_arboles[0][1] = testData(vector_datos, arbolito, 1362);
+    errores_minEnt_arboles[1][0] = minEnt; 
+    errores_minEnt_arboles[1][1] = testData(datos_ajuste, arbolito, 292);
+    errores_minEnt_arboles[2][0] = minEnt; 
+    errores_minEnt_arboles[2][1] = testData(datos_test, arbolito, 292);
+    writeTreeCSV(errores_minEnt_arboles);
+    arbolito = NULL; 
+
+    minEnt = 0.001f;
+    crearArbolDecision(&arbolito, vector_datos, NUM, minEnt);
+    printf("HEMOS PLANTADO UN ARBOL (*w*)\n");
+    errores_minEnt_arboles[0][0] = minEnt; 
+    errores_minEnt_arboles[0][1] = testData(vector_datos, arbolito, 1362);
+    errores_minEnt_arboles[1][0] = minEnt; 
+    errores_minEnt_arboles[1][1] = testData(datos_ajuste, arbolito, 292);
+    errores_minEnt_arboles[2][0] = minEnt; 
+    errores_minEnt_arboles[2][1] = testData(datos_test, arbolito, 292);
+    writeTreeCSV(errores_minEnt_arboles);
+    arbolito = NULL; 
+
+    minEnt = 0.01f;
+    crearArbolDecision(&arbolito, vector_datos, NUM, minEnt);
+    printf("HEMOS PLANTADO UN ARBOL (*w*)\n");
+    errores_minEnt_arboles[0][0] = minEnt; 
+    errores_minEnt_arboles[0][1] = testData(vector_datos, arbolito, 1362);
+    errores_minEnt_arboles[1][0] = minEnt; 
+    errores_minEnt_arboles[1][1] = testData(datos_ajuste, arbolito, 292);
+    errores_minEnt_arboles[2][0] = minEnt; 
+    errores_minEnt_arboles[2][1] = testData(datos_test, arbolito, 292);
+    writeTreeCSV(errores_minEnt_arboles);
+    arbolito = NULL; 
+
+    printf("\033[32mHEMOS PLANTADO UNA ARBOLEDA ~(*w*)~\033[0m\n");
 }
