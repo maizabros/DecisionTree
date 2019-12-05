@@ -26,8 +26,9 @@
 //#include "libDecisionTree.h"
 #include "arbolBin.h"
 
-#define C_ENTRENO 30 
-#define C_TEST 1916 
+#define C_ENTRENO 1362 
+#define C_AJUSTE 292
+#define C_TEST 292
 #define BUFF 1024
 #define HEADERS_SIZE 128
 int N = C_ENTRENO;
@@ -37,6 +38,7 @@ bool clase_utilizada[10] = {false};
 double medias_ganancias[10][2] = {{0.0}};
 int aciertos = 0;
 int numero_de_datos_en_hojas = 0; 
+double pruebas_arboles[2] = {0.0f};
 /* ***************************************************************************************************************** */
 /* **   A PARTIR DE AQUI HASTA EL SIGUIENTE SEPARADOR SON LAS DECLARACIONES DE FUNCIONES VARIABLES SEGUN ENTRADA  ** */
 /* ***************************************************************************************************************** */
@@ -116,7 +118,7 @@ void print_data(datos * vector_datos, int n){
 
 }
 
-void recogerDatos(datos ** vector_datos, datos ** datos_a_comprobar,char ** headers, int fd){
+void recogerDatos(datos ** vector_datos, datos ** datos_ajuste, datos ** datos_test,char ** headers, int fd){
 
 	int dup = dup2(fd, STDIN_FILENO);
 	if(fd == -1 || dup == -1){
@@ -127,7 +129,8 @@ void recogerDatos(datos ** vector_datos, datos ** datos_a_comprobar,char ** head
 
 	char * buffer = (char*)malloc(sizeof(char)*BUFF);
 	(*vector_datos) = (datos*)malloc(C_ENTRENO*sizeof(datos));
-	(*datos_a_comprobar) = (datos*)malloc(C_TEST*sizeof(datos));
+	(*datos_ajuste) = (datos*)malloc(C_AJUSTE*sizeof(datos));
+	(*datos_test) = (datos*)malloc(C_TEST*sizeof(datos));
 
 	
 	fgets(buffer, sizeof(char)*BUFF, stdin); 
@@ -152,20 +155,38 @@ void recogerDatos(datos ** vector_datos, datos ** datos_a_comprobar,char ** head
 	}
     i = 0;
 	do{
+            if(i == C_AJUSTE) break; // Asi podemos entrenarlo con cualquier cantidad de datos
+			char ** data = fragBufferExtract(buffer);
+
+			(*datos_ajuste)[i].male = atoi(data[0]);
+			(*datos_ajuste)[i].book1 = atoi(data[1]);
+			(*datos_ajuste)[i].book2 = atoi(data[2]);
+			(*datos_ajuste)[i].book3 = atoi(data[3]);
+			(*datos_ajuste)[i].book4 = atoi(data[4]);
+            (*datos_ajuste)[i].book5 = atoi(data[5]);
+			(*datos_ajuste)[i].isMarried = atoi(data[6]);
+			(*datos_ajuste)[i].isNoble = atoi(data[7]);
+			(*datos_ajuste)[i].numDeadRelations = strtod(data[8],NULL)/10.0f;
+			(*datos_ajuste)[i].popularity = strtod(data[9],NULL);
+			(*datos_ajuste)[i].isAlive = atoi(data[10]);
+			i++;
+    } while(fgets(buffer,sizeof(char)*BUFF,stdin) != NULL);
+    i = 0;
+	do{
+            if(i == C_TEST) break; // Asi podemos entrenarlo con cualquier cantidad de datos
 			char ** data = fragBufferExtract(buffer);
 			
-            if(i == C_TEST) break; // Asi podemos entrenarlo con cualquier cantidad de datos
-			(*datos_a_comprobar)[i].male = atoi(data[0]);
-			(*datos_a_comprobar)[i].book1 = atoi(data[1]);
-			(*datos_a_comprobar)[i].book2 = atoi(data[2]);
-			(*datos_a_comprobar)[i].book3 = atoi(data[3]);
-			(*datos_a_comprobar)[i].book4 = atoi(data[4]);
-            (*datos_a_comprobar)[i].book5 = atoi(data[5]);
-			(*datos_a_comprobar)[i].isMarried = atoi(data[6]);
-			(*datos_a_comprobar)[i].isNoble = atoi(data[7]);
-			(*datos_a_comprobar)[i].numDeadRelations = strtod(data[8],NULL)/10.0f;
-			(*datos_a_comprobar)[i].popularity = strtod(data[9],NULL);
-			(*datos_a_comprobar)[i].isAlive = atoi(data[10]);
+			(*datos_test)[i].male = atoi(data[0]);
+			(*datos_test)[i].book1 = atoi(data[1]);
+			(*datos_test)[i].book2 = atoi(data[2]);
+			(*datos_test)[i].book3 = atoi(data[3]);
+			(*datos_test)[i].book4 = atoi(data[4]);
+            (*datos_test)[i].book5 = atoi(data[5]);
+			(*datos_test)[i].isMarried = atoi(data[6]);
+			(*datos_test)[i].isNoble = atoi(data[7]);
+			(*datos_test)[i].numDeadRelations = strtod(data[8],NULL)/10.0f;
+			(*datos_test)[i].popularity = strtod(data[9],NULL);
+			(*datos_test)[i].isAlive = atoi(data[10]);
 			i++;
     } while(fgets(buffer,sizeof(char)*BUFF,stdin) != NULL);
 }
@@ -375,7 +396,7 @@ int calculo_minima_entropia(double entropias_clases[10][2]){
 	return clase_seleccionada;
 }
 
-void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano){
+void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
     /*
     printf("\033[34m\033[21m");
     print_data(e,tamano);
@@ -395,7 +416,7 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano){
     if (totalMuertos== 0) arg2 = 0;
     double entropia_C = arg1 + arg2; 
     //printf( "FUNCION CREAR ARBOL : ENTROPIA_C = [%.18F]\n",entropia_C);
-    if (tamano == 0 || isnan(entropia_C)){
+    if (tamano == 0 || isnan(entropia_C) || entropia_C <= entMin){
         if(esVacio(*a))
             nuevoArbolBin(a, e, tamano); 
 
@@ -422,7 +443,7 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano){
 		datos * vectHijoI;
 		datos * vectHijoD;
 		int clase_seleccionada = calculo_minima_entropia(entropias_clases);
-        if (entropias_clases[clase_seleccionada][0] <= 0.0001f){
+        if (entropias_clases[clase_seleccionada][0] <= 0.0001f  || entropia_C <= entMin){
 			        numero_de_datos_en_hojas += tamano;
 
             //printf("\033[32m YA NO HAY MAS CLASES!\033[0m\n");
@@ -430,14 +451,10 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano){
                 //~ printf("LA GANCIA DE LA CLASE %d es = [%.18F]\n",i,medias_ganancias[i][0]/medias_ganancias[i][1]);
             //printf("\033[32m        SOY UNA HOJA\033[0m\n");
             if(entropia_C > 0.0f){
-                if(entropia_C == 1.0f){
-                   (*a)->isAlive = rand() & 1; //Al tener los datos 50/50 genero un random entre 0 y 1. Basicamente lanzo una moneda 
-                } else {
-                    if(totalVivos >= totalMuertos)
-                        (*a)->isAlive = true; 
-                    else
-                        (*a)->isAlive = false; 
-                }
+                if(totalVivos >= totalMuertos)
+                   (*a)->isAlive = true; 
+                else
+                   (*a)->isAlive = false; 
             } else {
                 (*a)->isAlive = e[0].isAlive;
             }
@@ -617,10 +634,10 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano){
 */      
 		
         //printf("    \033[34m\033[21mHIJO IZQUIERDO\033[0m\n");
-		crearArbolDecision(&((*a)->izda), vectHijoI, x);
+		crearArbolDecision(&((*a)->izda), vectHijoI, x, entMin);
         //free(vectHijoI);
         //printf("    \033[34m\033[21mHIJO DERECHO\033[0m\n");
-		crearArbolDecision(&((*a)->dcha), vectHijoD, y); 
+		crearArbolDecision(&((*a)->dcha), vectHijoD, y, entMin); 
         //free(vectHijoD);
         /*
         if(clase_seleccionada!= -1)
@@ -701,26 +718,10 @@ bool asignarIsAlive(datos dato, tipoArbolBin a){
     }
 }
 
-/*
-void printDato(datos testData){
-    printf("%d,",testData.male);
-    printf("%d,",testData.book1);
-    printf("%d,",testData.book2);
-    printf("%d,",testData.book3);
-    printf("%d,",testData.book4);
-    printf("%d,",testData.book5);
-    printf("%d,",testData.isMarried);
-    printf("%d,",testData.isNoble);
-    printf("%d,",(int)(testData.numDeadRelations*10.0f));
-    printf("%.18F,",testData.popularity);
-    printf("%d\n",testData.isAlive);
-}
-*/
-
-void testData(datos * testData, tipoArbolBin a){
+double testData(datos * testData, tipoArbolBin a, int tamano){
 
     FILE * f = fopen("csv/testDataAsignado.csv","w+");
-    for (int i=0; i<C_TEST; i++){
+    for (int i=0; i<tamano; i++){
         bool b = asignarIsAlive(testData[i],a);
         if (testData[i].isAlive == b) aciertos++;
         //else printDato(testData[i]);
@@ -739,8 +740,20 @@ void testData(datos * testData, tipoArbolBin a){
     } 
 
     printf("NUMERO DE DATOS DE ENTRENAMIENTO = [%d]\n",C_ENTRENO);
+    printf("NUMERO DE DATOS DE AJUST = [%d]\n",C_AJUSTE);
     printf("NUMERO DE DATOS DE TEST = [%d]\n",C_TEST);
     printf("\033[32mTOTAL ACIERTOS = [%d]\n",aciertos);
-    printf("PORCENTAJE ACIERTOS = [%.18F]\033[0m\n",(double)aciertos/(double)C_TEST);
-	printf("NUMERO TOTAL DE DATOS EN HOJAS DEL ARBOL DE ENTRENAMIENTO = [%d]\n",numero_de_datos_en_hojas);
+    printf("PORCENTAJE ACIERTOS = [%.18F]\033[0m\n",(double)aciertos/(double)tamano);
+    aciertos=0.0f;
+    return ((double)aciertos/(double)tamano);
+}
+
+void writeTreeCSV(double e[4][2]){
+
+    FILE * f = fopen("csv/errores_minEnt_arboles.csv", "a+");
+
+    for (int i=0; i<4; i++)
+        fprintf(f,"%F %F HOLI",e[i][0], e[i][1]);
+    fprintf(f,"\n");
+
 }
