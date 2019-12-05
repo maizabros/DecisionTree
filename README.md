@@ -1,4 +1,3 @@
-# ‎‎‎‎‎‎‎‎‎‎‎¡¡ÉSTE ES EL BUENO!!
 
 <br></br>
 <p align="center">
