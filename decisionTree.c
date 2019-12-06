@@ -18,11 +18,19 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <fcntl.h>
 #include "lib/libDecisionTree.h"
 
 #define BUFF 1024
 #define NUM 1362 
+
+char * procesar(char * putoComa){
+    for(int i=0; i<strlen(putoComa); i++){
+        if(putoComa[i] == ',') putoComa[i] = '.';
+    }
+    return putoComa;
+}
 
 int main(int argc, char* argv[]){
 
@@ -30,10 +38,12 @@ int main(int argc, char* argv[]){
 	datos * vector_datos;
 	datos * datos_ajuste;
 	datos * datos_test;
-    double errores_minEnt_arboles[4][2] = {{0.0f}};
+    double errores_minEnt_arboles[3][2] = {{0.0f}};
 
-    if(argc < 2){
+    if(argc < 3){
 		printf("Numero de argumentos invalido.\nNecesita indicar fichero CSV de datos.\n");
+		//printf("También es necesario el minEnt.\n");
+		printf("También es necesario el contMax.\n");
 		return EXIT_FAILURE;
 	} else {
         int fd = open(argv[1],O_RDONLY, 0400);
@@ -46,7 +56,9 @@ int main(int argc, char* argv[]){
             totalVivos++;
     }
 
-    double minEnt;
+    //char * minEntConPunto = procesar(argv[2]); 
+    int contMax = atoi(argv[2]);
+    double minEnt = 0.0f;//strtod(minEntConPunto,NULL);
     tipoArbolBin arbolito;
     arbolito = NULL;
     printf("\033[32mVAMOS A PLANTAR UNA ARBOLEDA ~(*w*)~\033[0m\n");
@@ -54,56 +66,15 @@ int main(int argc, char* argv[]){
     printf("\033[34mVAMOS A PLANTAR UN ARBOL (*w*)\033[0m\n");
     printf("TAMAÑO = [%d]\n",NUM);
 
-    minEnt = 0.01f;
-    crearArbolDecision(&arbolito, vector_datos, NUM, minEnt);
+    crearArbolDecision(&arbolito, vector_datos, NUM, minEnt, 0, contMax);
     printf("\033[34mHEMOS PLANTADO UN ARBOL (*w*)\033[0m\n\n");
-    errores_minEnt_arboles[0][0] = minEnt; 
+    errores_minEnt_arboles[0][0] = (double)contMax; 
     errores_minEnt_arboles[0][1] = testData(vector_datos, arbolito, 1362);
-    errores_minEnt_arboles[1][0] = minEnt; 
+    errores_minEnt_arboles[1][0] = (double)contMax; 
     errores_minEnt_arboles[1][1] = testData(datos_ajuste, arbolito, 292);
-    errores_minEnt_arboles[2][0] = minEnt; 
+    errores_minEnt_arboles[2][0] = (double)contMax; 
     errores_minEnt_arboles[2][1] = testData(datos_test, arbolito, 292);
     writeTreeCSV(errores_minEnt_arboles);
     arbolito = NULL; 
-
-    minEnt = 0.001f;
-    printf("\033[34mVAMOS A PLANTAR UN ARBOL (*w*)\033[0m\n");
-    crearArbolDecision(&arbolito, vector_datos, NUM, minEnt);
-    printf("\033[34mHEMOS PLANTADO UN ARBOL (*w*)\033[0m\n\n");
-    errores_minEnt_arboles[0][0] = minEnt; 
-    errores_minEnt_arboles[0][1] = testData(vector_datos, arbolito, 1362);
-    errores_minEnt_arboles[1][0] = minEnt; 
-    errores_minEnt_arboles[1][1] = testData(datos_ajuste, arbolito, 292);
-    errores_minEnt_arboles[2][0] = minEnt; 
-    errores_minEnt_arboles[2][1] = testData(datos_test, arbolito, 292);
-    writeTreeCSV(errores_minEnt_arboles);
-    arbolito = NULL; 
-
-    minEnt = 0.0001f;
-    printf("\033[34mVAMOS A PLANTAR UN ARBOL (*w*)\033[0m\n");
-    crearArbolDecision(&arbolito, vector_datos, NUM, minEnt);
-    printf("\033[34mHEMOS PLANTADO UN ARBOL (*w*)\033[0m\n\n");
-    errores_minEnt_arboles[0][0] = minEnt; 
-    errores_minEnt_arboles[0][1] = testData(vector_datos, arbolito, 1362);
-    errores_minEnt_arboles[1][0] = minEnt; 
-    errores_minEnt_arboles[1][1] = testData(datos_ajuste, arbolito, 292);
-    errores_minEnt_arboles[2][0] = minEnt; 
-    errores_minEnt_arboles[2][1] = testData(datos_test, arbolito, 292);
-    writeTreeCSV(errores_minEnt_arboles);
-    arbolito = NULL; 
-
-    minEnt = 0.00001f;
-    printf("\033[34mVAMOS A PLANTAR UN ARBOL (*w*)\033[0m\n");
-    crearArbolDecision(&arbolito, vector_datos, NUM, minEnt);
-    printf("\033[34mHEMOS PLANTADO UN ARBOL (*w*)\033[0m\n\n");
-    errores_minEnt_arboles[0][0] = minEnt; 
-    errores_minEnt_arboles[0][1] = testData(vector_datos, arbolito, 1362);
-    errores_minEnt_arboles[1][0] = minEnt; 
-    errores_minEnt_arboles[1][1] = testData(datos_ajuste, arbolito, 292);
-    errores_minEnt_arboles[2][0] = minEnt; 
-    errores_minEnt_arboles[2][1] = testData(datos_test, arbolito, 292);
-    writeTreeCSV(errores_minEnt_arboles);
-    arbolito = NULL; 
-
     printf("\033[32mHEMOS PLANTADO UNA ARBOLEDA ~(*w*)~\033[0m\n");
 }

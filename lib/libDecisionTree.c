@@ -369,8 +369,9 @@ int calculo_maxima_ganancia(double entropias_clases[10][2]){
 	return clase_seleccionada;
 }
 
-void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
+void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin, int cont, int contMax){
 
+    cont++;
     N = tamano;
     double totalVivos = 0;
     for(int i=0; i<tamano; i++){
@@ -383,7 +384,9 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
     double arg2 = -(totalMuertos/N)*log2(totalMuertos/N);
     if (totalMuertos== 0) arg2 = 0;
     double entropia_C = arg1 + arg2; 
-    if (tamano == 0 || isnan(entropia_C) || entropia_C <= entMin){
+    if (tamano == 0 || isnan(entropia_C) || entropia_C <= entMin || cont == contMax){
+        //if(entropia_C <= entMin) printf("\033[31mMINENT = [%F]\033[0m\n",entMin);
+        printf("\033[31mENTROPIA HOJA [%F]\033[0m\n",entropia_C);
         if(esVacio(*a))
             nuevoArbolBin(a, e, tamano); 
 
@@ -405,7 +408,9 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
 		datos * vectHijoI;
 		datos * vectHijoD;
 		int clase_seleccionada = calculo_maxima_ganancia(entropias_clases);
-        if (entropias_clases[clase_seleccionada][0] <= 0.0001f  || entropia_C <= entMin){
+        if (entropias_clases[clase_seleccionada][0] <= 0.0001f  || entropia_C <= entMin || cont == contMax){
+        //if(entropia_C <= entMin) printf("\033[31mMINENT = [%F]\033[0m\n",entMin);
+        printf("\033[31mENTROPIA HOJA [%F]\033[0m\n",entropia_C);
 
             if(entropia_C > 0.0f){
                 if(totalVivos >= totalMuertos)
@@ -566,8 +571,8 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, int tamano, double entMin){
 				break;
 		}
 
-		crearArbolDecision(&((*a)->izda), vectHijoI, x, entMin);
-		crearArbolDecision(&((*a)->dcha), vectHijoD, y, entMin); 
+		crearArbolDecision(&((*a)->izda), vectHijoI, x, entMin, cont, contMax);
+		crearArbolDecision(&((*a)->dcha), vectHijoD, y, entMin, cont, contMax); 
     } 
 }
 
@@ -642,11 +647,12 @@ bool asignarIsAlive(datos dato, tipoArbolBin a){
 double testData(datos * testData, tipoArbolBin a, int tamano){
 
     aciertos=0.0f;
-    FILE * f = fopen("csv/testDataAsignado.csv","w+");
+    //FILE * f = fopen("csv/testDataAsignado.csv","w+");
     for (int i=0; i<tamano; i++){
         bool b = asignarIsAlive(testData[i],a);
         if (testData[i].isAlive == b) aciertos++;
-        testData[i].isAlive = b;
+        //testData[i].isAlive = b;
+        /*
         fprintf(f,"%d,",testData[i].male);
         fprintf(f,"%d,",testData[i].book1);
         fprintf(f,"%d,",testData[i].book2);
@@ -658,6 +664,7 @@ double testData(datos * testData, tipoArbolBin a, int tamano){
         fprintf(f,"%d,",(int)(testData[i].numDeadRelations*10.0f));
         fprintf(f,"%.18F,",testData[i].popularity);
         fprintf(f,"%d\n",testData[i].isAlive);
+        */
     } 
 
     printf("NUMERO DE DATOS DE ENTRENAMIENTO = [%d]\n",C_ENTRENO);
@@ -668,11 +675,11 @@ double testData(datos * testData, tipoArbolBin a, int tamano){
     return (1.0f - ((double)aciertos/(double)tamano));
 }
 
-void writeTreeCSV(double e[4][2]){
+void writeTreeCSV(double e[3][2]){
 
     FILE * f = fopen("csv/errores_minEnt_arboles.csv", "a");
 
-    for (int i=0; i<4; i++)
+    for (int i=0; i<3; i++)
         fprintf(f,"%F %F ",e[i][0], e[i][1]);
     fprintf(f,"\n");
 

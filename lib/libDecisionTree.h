@@ -30,7 +30,7 @@ float entropia_umbral(tipoElementoPila);
 float entropia_clases(cuenta_datos_clases);
 void calculo_entropia_clases(datos *, float, float **);
 int calculo_maxima_ganancia(float **);
-void crearArbolDecision(tipoArbolBin *, datos *, int, int);
+void crearArbolDecision(tipoArbolBin *, datos *, int, double, int, int);
 bool asignarIsAlive(datos, tipoArbolBin);
 double testData(datos *, tipoArbolBin, int);
 void writeTreeCSV(double[3][2]);
