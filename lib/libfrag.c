@@ -46,16 +46,9 @@ char **fragBufferExtract(const char *buffer) {
 
 void delArg(char ** arg,int n) {
 
-	int i=0;
-	for (i; i<n; i++){
+	for (int i = 0; i<n; i++){
 		free((arg)[i]);
 	}
-	/*
-	while((arg)[i] != NULL) {
-		free((arg)[i]);
-		i++;
-	}
-	*/
 	free(arg);
 }
 

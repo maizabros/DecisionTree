@@ -25,15 +25,18 @@
 
 void print_data(datos * vector_datos, int);
 float umbral(datos *, char*, int);
-void recogerDatos(datos**,datos**,datos**,char **,int);
+void recogerDatos(datos**,datos**,datos**,char ***,int);
+double gini_clases(cuenta_datos_clases);
+double chiC_clases(cuenta_datos_clases);
 float entropia_umbral(tipoElementoPila);
 float entropia_clases(cuenta_datos_clases);
 void calculo_entropia_clases(datos *, float, float **);
-int calculo_minima_entropia(float **);
-void crearArbolDecision(tipoArbolBin *, datos *, int, int);
+int calculo_maxima_ganancia(float **);
+void crearArbolDecision(tipoArbolBin *, datos *, char **, int, double, int, int);
 bool asignarIsAlive(datos, tipoArbolBin);
 double testData(datos *, tipoArbolBin, int);
 void writeTreeCSV(double[3][2]);
+void eliminarArbol(tipoArbolBin *);
 
 FUNCIONES_SELECCION_DE_CLASE(male, bool);
 FUNCIONES_SELECCION_DE_CLASE(book1, bool);
