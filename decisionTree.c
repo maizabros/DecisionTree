@@ -43,8 +43,8 @@ int main(int argc, char* argv[]){
         printf("Necesita indicar fichero CSV de datos (en la carpeta ./csv tiene los datos de entrenamiento).\n");
 		printf("También es posible añadir la entropía mínima o el máximo de hijos (profundidad).\n");
         printf("Si el tercer argumento es mayor o igual a 1 se asumirá que se desea podar por profundidad.\n");
-        printf("En otro caso se utilizará el tercer argumento como entropía mínima para podar el árboln\n");
-        printf("Si no se especifica un tercer argumento no se podará el árbol.\n"); 
+        printf("En otro caso se utilizará el tercer argumento como entropía mínima para podar el árbol\n");
+        printf("Si no se especifica un tercer argumento no se podará el árbol.\n\n"); 
 		printf("Ejemplos:\n");
 		printf("./decisionTree csv/problem_book.csv 4           |  Éste generará un árbol con profundidad máxima de 4 hijos\n");
 		printf("./decisionTree csv/problem_book.csv 0.02547     |  Éste generará un árbol con entropía mínima de 0.02547\n");
@@ -73,11 +73,12 @@ int main(int argc, char* argv[]){
     if (corte >= 1.0f){ // significa que se cortará el árbol a partir de su profundidad
         printf("Asumiendo que quiere podar el árbol por \033[34mPROFUNDIDAD\033[0m\n");
         contMax = (int)corte;
+        //entMin = corte;
     } else if(corte != 0.0f){            // significa que se cortará el árbol a partir de su entropua mínima
         printf("Asumiendo que quiere podar el árbol por \033[34mENTROPÍA MÍNIMA\033[0m\n");
         entMin = corte;
     } else
-        printf("Asumiendo que no quiere podar el árbol\nSi quiere podarlo especifíquelo con el tercer argumento\n(número >= 1: Profundidad | múmero < 1: por entropía mínima\n\n)");
+        printf("Asumiendo que no quiere podar el árbol\nSi quiere podarlo especifíquelo con el tercer argumento\n(número >= 1: Profundidad | múmero < 1: por entropía mínima)\n\n");
     tipoArbolBin arbolito;
     arbolito = NULL;
     
@@ -90,15 +91,17 @@ int main(int argc, char* argv[]){
     printf("\033[32mCreando árbol a partir de los datos...\033[0m\n");
     crearArbolDecision(&arbolito, vector_datos, headers, C_ENTRENO, entMin, 0, contMax);
     printf("\033[32mÁrbol creado\033[0m\n");
-    errores_entMin_arboles[0][0] = (double)corte; 
-    
+
     printf("DATOS DE ENTRENAMIENTO:\n");
+    errores_entMin_arboles[0][0] = (double)corte; 
     errores_entMin_arboles[0][1] = testData(vector_datos, arbolito, C_ENTRENO);
-    errores_entMin_arboles[1][0] = (double)corte; 
+
     printf("DATOS DE AJUSTE:\n");
+    errores_entMin_arboles[1][0] = (double)corte; 
     errores_entMin_arboles[1][1] = testData(datos_ajuste, arbolito, C_AJUSTE);
-    errores_entMin_arboles[2][0] = (double)corte; 
+
     printf("DATOS DE TEST:\n");
+    errores_entMin_arboles[2][0] = (double)corte; 
     errores_entMin_arboles[2][1] = testData(datos_test, arbolito, C_TEST);
     writeTreeCSV(errores_entMin_arboles);
     eliminarArbol(&arbolito);

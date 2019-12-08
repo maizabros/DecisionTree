@@ -183,18 +183,18 @@ void recogerDatos(datos ** vector_datos, datos ** datos_ajuste, datos ** datos_t
     } while(fgets(buffer,sizeof(char)*BUFF,stdin) != NULL);
 }
 
-double gini_clases(cuenta_datos_clases res){ //Para utilizar esta función vea la especificación en calculo_entropia_clases.
+double gini_clases(cuenta_datos_clases res){ //Para utilizar esta función véase la especificación en calculo_entropia_clases.
 
     double totalSi = res.clase_si_vivos + res.clase_si_muertos;
     double totalNo = res.clase_no_vivos + res.clase_no_muertos;
     double total=totalSi+totalNo;
-    double claseSi=(1-(((double)(res.clase_si_vivos/totalSi)*((double)res.clase_si_vivos/totalSi))+(((double)res.clase_si_muertos/totalSi)*((double)res.clase_si_muertos/totalSi))));
-    double claseNo=(1-((((double)res.clase_no_vivos/totalNo)*((double)res.clase_no_vivos/totalNo))+(((double)res.clase_no_muertos/totalNo)*((double)res.clase_no_muertos/totalNo))));
+    double claseSi=(((double)(res.clase_si_vivos/totalSi)*((double)res.clase_si_vivos/totalSi))+(((double)res.clase_si_muertos/totalSi)*((double)res.clase_si_muertos/totalSi)));
+    double claseNo=((((double)res.clase_no_vivos/totalNo)*((double)res.clase_no_vivos/totalNo))+(((double)res.clase_no_muertos/totalNo)*((double)res.clase_no_muertos/totalNo)));
     double ent=((totalSi/total)*claseSi)+((totalNo/total)*claseNo);
     return ent;
 }
 
-double chiC_clases(cuenta_datos_clases res){ //Para utilizar esta función vea la especificación en calculo_entropia_clases.
+double chiC_clases(cuenta_datos_clases res){ //Para utilizar esta función véase la especificación en calculo_entropia_clases.
 
     double totalVivos=res.clase_si_vivos+res.clase_no_vivos;
     double totalMuertos=res.clase_si_muertos+res.clase_no_muertos;
@@ -431,7 +431,7 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, char ** headers,int tamano,
     double arg2 = -(totalMuertos/N)*log2(totalMuertos/N);
     if (totalMuertos== 0.0f) arg2 = 0.0f;
     double entropia_C = arg1 + arg2; 
-    if (tamano == 0 || isnan(entropia_C) || entropia_C <= entMin || cont == contMax){ // Convierte en hoja al nodo (éste está por si acaso, porque en algunos casos entra en el nodo pero no hay datos)
+    if (tamano == 0 || isnan(entropia_C) /* || entropia_C <= entMin */ || cont == contMax){ // Convierte en hoja al nodo (éste está por si acaso, porque en algunos casos entra en el nodo pero no hay datos)
 
         if(esVacio(*a))
             nuevoArbolBin(a, e, tamano); 
@@ -453,7 +453,7 @@ void crearArbolDecision(tipoArbolBin * a, datos * e, char ** headers,int tamano,
                                                                             // la condición del umbral para los no categóricos y si es cierto o falso para los booleanos
 
 		int clase_seleccionada = calculo_maxima_ganancia(entropias_clases); //Elige la clase que mas ganancia consigue
-        if ( clase_seleccionada == -1 || entropias_clases[clase_seleccionada][0] <= entMin || entropia_C <= entMin || cont == contMax){ // Convierte en hoja al nodo y sale de la funcion recursiva
+        if ( clase_seleccionada == -1 || entropias_clases[clase_seleccionada][0] <= entMin /* || entropia_C <= entMin*/ || cont == contMax){ // Convierte en hoja al nodo y sale de la funcion recursiva
 
             if(entropia_C > 0.0f){ // Si todos los datos no tiene el mismo booleano isAlive igual
                 if(totalVivos >= totalMuertos)

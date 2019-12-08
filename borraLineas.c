@@ -23,13 +23,13 @@ int main(int argc, char* argv[]){
 
     fgets(buffer,BUFF,f);
     char ** args1 = fragmenta(buffer);
-    char ** args2;
+    for(int i=0; i<6; i++){
+        printf("%s ",args1[i]); 
+    }
+    printf("\n");
     while(fgets(buffer,BUFF,f) != NULL){
         
-        args2 = fragmenta(buffer);
-        for(int i=0; i<6; i++){
-            printf("%s ",args1[i]); 
-        }
+        char ** args2 = fragmenta(buffer);
         if (strcmp(args1[1],args2[1]) != 0 || strcmp(args1[3],args2[3]) !=0 || strcmp(args1[5],args2[5]) != 0){
             for(int i=0; i<6; i++){
                 printf("%s ",args2[i]); 
