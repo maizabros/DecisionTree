@@ -1,6 +1,9 @@
 #ifndef LIBSTRUCT
 #define LIBSTRUCT
 #include <stdbool.h>
+#define C_ENTRENO 1362
+#define C_AJUSTE 192
+#define C_TEST 192
 typedef struct dat{
 	bool male;
 	bool book1;

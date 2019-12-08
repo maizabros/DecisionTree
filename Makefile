@@ -7,9 +7,16 @@ decisionTree:
 	@gcc -g -o decisionTree decisionTree.c  lib/libDecisionTree.o lib/libfrag.o lib/pilaDeadAlive.o lib/quicksort.o lib/arbolBin.o -lm
 	$(info Compilando programa principal DECISIONTREE)
 
+borraLineas:
+	@gcc -g -o borraLineas borraLineas.c  lib/fragmenta.o
+	$(info Compilando programa borraLineas)
 
 ###############################################################
 # LIBRERIAS
+fragmenta: lib/fragmenta.c
+	@gcc -g -c lib/fragmenta.c -o lib/fragmenta.o
+	$(info Compilando librería fragmenta para fragmentar strings)
+
 libfrag: lib/libfrag.c
 	@gcc -g -c lib/libfrag.c -o lib/libfrag.o
 	$(info Compilando librería libfrag para fragmentar CSV)
@@ -31,7 +38,7 @@ libDecisionTree: lib/libDecisionTree.c lib/libfrag.o lib/quicksort.o lib/pilaDea
 	@gcc -shared -g -c lib/libDecisionTree.c -Llib -lfrag -lquicksort -lpilaDeadAlive -larbolBin -o lib/libDecisionTree.o
 	$(info Compilando libreria libDecisionTree) 
 
-lib: libfrag quicksort pilaEnteros arbolBin libDecisionTree
+lib: fragmenta libfrag quicksort pilaEnteros arbolBin libDecisionTree
 ###############################################################
 
 ###############################################################
@@ -41,12 +48,13 @@ cleanTree:
 	$(info Eliminando objetos de las librerias)
 cleanLib: 
 	@rm -rf lib/*.o
-	@rm -rf csv/errores_minEnt_arboles.csv
+	@rm -rf decisionTree borraLineas 
+	@rm -rf csv/errores_entMin_arboles.csv
 	$(info Eliminando ejecutables)
 cleanAll: cleanTree cleanLib
 clenaAll: cleanTree cleanLib
 celanAll: cleanTree cleanLib
 ###############################################################
 
-all: lib decisionTree
+all: lib decisionTree borraLineas
 ###############################################################
